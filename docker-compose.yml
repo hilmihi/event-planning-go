@@ -1,0 +1,29 @@
+version: '3'
+services:
+
+  appdb:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: toor
+      MYSQL_DATABASE: taktuku-project
+    ports: 
+      - 3306:3306
+    volumes:
+      # - './data:/bitnami/mysql/data'
+      - './init:/docker-entrypoint-initdb.d'
+    healthcheck:
+      test: ["CMD", "mysql", "-u", "root",  "-ptoor", "-e", "show schemas"]
+      retries: 20
+      interval: 10s
+
+  app:
+    build: .
+    restart: always
+    depends_on:
+      appdb:
+        condition: service_healthy
+    environment:
+      DB_CONNECTION_STRING: root:toor@tcp(appDb:3306)/taktuku-project?charset=utf8&parseTime=True&loc=Local
+    ports:
+      - 8080:8080
