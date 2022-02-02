@@ -2,7 +2,7 @@
 
 ## About The Project
 
-RESTFUL API for TakTuku an E-Commerce App created for the purpose of study.
+GRAPHQL Project for Event Planning
 
 Building the project with layered architecture, and clean code approach for the structure, with the intention of simplicity when the app is scaling up and ease of maintenance
 
