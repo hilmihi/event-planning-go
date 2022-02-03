@@ -29,4 +29,6 @@ jobs:
         script: |
           cd event-planning-go
           git pull origin main
+          cd my-datavolume/
+          sudo chmod 755 -R .
           docker-compose down && docker-compose up --build -d
