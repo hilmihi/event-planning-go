@@ -15,7 +15,7 @@ type ServiceUser interface {
 	ServiceUsersGet() ([]entities.User, error)
 	ServiceUserGet(id int) (model.User, error)
 	ServiceUserCreate(input entities.User) (model.User, error)
-	ServiceUserUpdate(id int, input entities.User) (entities.User, error)
+	ServiceUserUpdate(id int, input model.NewUser) error
 	ServiceUserDelete(id int) (entities.User, error)
 }
 
@@ -132,19 +132,36 @@ func (s *serviceUser) ServiceUserCreate(input entities.User) (model.User, error)
 	return output, nil
 }
 
-func (s *serviceUser) ServiceUserUpdate(id int, input entities.User) (entities.User, error) {
+func (s *serviceUser) ServiceUserUpdate(id int, input model.NewUser) error {
 	user, err := s.repository1.GetUser(id)
 	if err != nil {
-		return user, err
+		return err
 	}
 
-	input.Id = id
+	user.Name = input.Name
+	user.Password = input.Password
+	user.Email = input.Email
+	if input.BirthDate != nil {
+		user.Birth_date = *input.BirthDate
+	}
+	if input.PhoneNumber != nil {
+		user.Phone_number = *input.PhoneNumber
+	}
+	if input.Photo != nil {
+		user.Photo = *input.Photo
+	}
+	if input.Gender != nil {
+		user.Gender = *input.Gender
+	}
+	if input.Address != nil {
+		user.Address = *input.Address
+	}
 
-	updateUser, err := s.repository1.UpdateUser(input)
+	_, err = s.repository1.UpdateUser(user)
 	if err != nil {
-		return updateUser, err
+		return err
 	}
-	return updateUser, nil
+	return nil
 }
 
 func (s *serviceUser) ServiceUserDelete(id int) (entities.User, error) {

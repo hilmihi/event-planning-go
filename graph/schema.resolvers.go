@@ -30,27 +30,16 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 }
 
 func (r *mutationResolver) UpdateUser(ctx context.Context, input model.NewUser, id int) (*model.ResponseMessage, error) {
-	auth_user := ctx.Value("EchoContextKey").(int)
-	if auth_user == 0 {
+	auth_user, bol := ctx.Value("EchoContextKey").(int)
+	if bol != true {
 		return &model.ResponseMessage{Code: 400, Message: "Not Authorized"}, fmt.Errorf("Not Authorized")
-	}
-
-	user := entities.User{
-		Name:         input.Name,
-		Email:        input.Email,
-		Password:     input.Password,
-		Birth_date:   *input.BirthDate,
-		Phone_number: *input.PhoneNumber,
-		Photo:        *input.Photo,
-		Gender:       *input.Gender,
-		Address:      *input.Address,
 	}
 
 	if id != auth_user {
 		return &model.ResponseMessage{Code: 400, Message: "Not Allowed"}, fmt.Errorf("Not Authorized")
 	}
 
-	_, err := r.userService.ServiceUserUpdate(int(auth_user), user)
+	err := r.userService.ServiceUserUpdate(int(auth_user), input)
 	if err != nil {
 		fmt.Println(err)
 		return &model.ResponseMessage{Code: 500, Message: "Internal Server Error"}, err

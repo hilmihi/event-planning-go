@@ -65,7 +65,7 @@ func (r *Repository_User) GetUser(id int) (entities.User, error) {
 	var user entities.User
 
 	row := r.db.QueryRow(`SELECT id, name, email, birth_date, phone_number, photo, gender, address FROM users WHERE id = ? AND deleted_at IS NULL`, id)
-	fmt.Println(row)
+
 	err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Birth_date, &user.Phone_number, &user.Photo, &user.Gender, &user.Address)
 	if err != nil {
 		return user, err
@@ -76,7 +76,7 @@ func (r *Repository_User) GetUser(id int) (entities.User, error) {
 
 //create user
 func (r *Repository_User) CreateUser(user entities.User) (entities.User, error) {
-	query := `INSERT INTO users (name, email, password, birth_date, phone_number, photo, gender, address, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, now(), now())`
+	query := `INSERT INTO users (name, email, password, created_at, updated_at) VALUES (?, ?, ?, now(), now())`
 
 	statement, err := r.db.Prepare(query)
 	if err != nil {
@@ -85,7 +85,7 @@ func (r *Repository_User) CreateUser(user entities.User) (entities.User, error) 
 
 	defer statement.Close()
 
-	_, err = statement.Exec(user.Name, user.Email, user.Password, user.Birth_date, user.Phone_number, user.Photo, user.Gender, user.Address)
+	_, err = statement.Exec(user.Name, user.Email, user.Password)
 	if err != nil {
 		return user, err
 	}

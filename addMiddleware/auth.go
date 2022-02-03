@@ -54,7 +54,7 @@ func (s *jwtService) ValidateToken(TokenGenerated string) (*jwt.Token, error) {
 func JWTMiddlewareGraphQL() echo.MiddlewareFunc {
 	return middleware.JWTWithConfig(middleware.JWTConfig{
 		SigningMethod: "HS256",
-		SigningKey:    []byte("R4HASIA"),
+		SigningKey:    JWT_SECRET,
 		Skipper: func(c echo.Context) bool {
 			return c.Request().Header.Get("Authorization") == ""
 		},
