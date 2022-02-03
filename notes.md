@@ -4,7 +4,7 @@ Perlu login via ssh ke VM:
 
 ```sh
 # lenovo.pem adalah nama file permission (key-pair) yang sudah dibuat sebelumnya
-ssh -i ~/lenovo.pem ubuntu@ec2-13-250-111-189.ap-southeast-1.compute.amazonaws.com
+ssh -i poreone.pem ubuntu@54.169.195.29
 ```
 
 ## [Sekali] Install docker
@@ -24,6 +24,7 @@ sudo chmod 777 /var/run/docker.sock
 
 ```sh
 sudo apt-get install python3-pip
+sudo -H pip3 install --upgrade pip
 sudo pip3 install docker-compose
 ```
 
@@ -61,7 +62,7 @@ echo 'PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
 ## [Setiap deploy] Git pull origin master
 
 ```sh
-cd e-commerce-project
+cd event-planning-go
 git pull origin main
 ```
 
