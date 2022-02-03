@@ -6,7 +6,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: toor
-      MYSQL_DATABASE: taktuku-project
+      MYSQL_DATABASE: eventkoe-project
     ports: 
       - 3306:3306
     volumes:
@@ -24,6 +24,6 @@ services:
       appdb:
         condition: service_healthy
     environment:
-      DB_CONNECTION_STRING: root:toor@tcp(appDb:3306)/taktuku-project?charset=utf8&parseTime=True&loc=Local
+      DB_CONNECTION_STRING: root:toor@tcp(appDb:3306)/eventkoe-project?charset=utf8&parseTime=True&loc=Local
     ports:
       - 8080:8080
