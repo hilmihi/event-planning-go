@@ -57,6 +57,23 @@ type Event{
   deleted_at: String
 }
 
+type EventDetail{
+  id: Int 
+  id_user: Int!
+  id_category: Int!
+  title: String!
+  start_date: String!
+  end_date: String!
+  location: String!
+  details: String!
+  photo: String
+  created_at: String
+  updated_at: String
+  deleted_at: String
+  comments: Comment
+  participant: Participant
+}
+
 type Comment{
   id: Int
   id_event: Int!
@@ -83,9 +100,12 @@ type Query {
   usersById(id:int): User!
   
   events: [Event!]!
-  eventsById(id:int): Event!
+  eventsById(id: Int): EventDetail!
   
-  comments:[Comment!]!
+  category: [category!]!
+  
+  comments(id_event: Int!):[Comment!]!
+
 }
 
 input NewUser {
