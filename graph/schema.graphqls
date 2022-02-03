@@ -20,36 +20,132 @@ type ResponseLogin {
 }
 
 type User {
-  id: Int!
+  id: Int
   name: String!
   email: String!
   password: String!
-  birth_date: String
-  phone_number: String
+  birth_date: String!
+  phone_number: String!
   photo: String
-  gender: String
-  address: String
+  gender: String!
+  address: String!
+  created_at: String
+  updated_at: String
+  deleted_at: String
+}
+
+type Category{
+  id: Int
+  description: String!
+  created_at: String
+  updated_at: String
+  deleted_at: String
+}
+
+type Event{
+  id: Int 
+  id_user: Int!
+  id_category: Int!
+  title: String!
+  start_date: String!
+  end_date: String!
+  location: String!
+  details: String!
+  photo: String
+  created_at: String
+  updated_at: String
+  deleted_at: String
+}
+
+type Comment{
+  id: Int
+  id_event: Int!
+  id_user: Int!
+  comment: String
+  created_at: String
+  updated_at: String
+  deleted_at: String
+}
+
+type Participant{
+    id: Int
+    id_event: Int!
+    id_user: Int!
+    created_at: String
+    updated_at: String
+    deleted_at: String
 }
 
 type Query {
-  users: [User!]!
-  user(id: Int!): User!
   login(email: String!, password: String!): ResponseLogin!
+  
+  users: [User!]!
+  usersById(id:int): User!
+  
+  events: [Event!]!
+  eventsById(id:int): Event!
+  
+  comments:[Comment!]!
 }
 
 input NewUser {
   name: String!
   email: String!
   password: String!
-  birth_date: String
-  phone_number: String
+  birth_date: String!
+  phone_number: String!
   photo: String
-  gender: String
-  address: String
+  gender: String!
+  address: String!
+  created_at: String
+  updated_at: String
+  deleted_at: String
+}
+
+input NewEvent{
+  id_user: Int!
+  id_category: Int!
+  title: String!
+  start_date: String!
+  end_date: String!
+  location: String!
+  details: String!
+  photo: String
+  created_at: String
+  updated_at: String
+  deleted_at: String
+}
+
+input NewComment{
+  id_event: Int!
+  id_user: Int!
+  comment: String
+  created_at: String
+  updated_at: String
+  deleted_at: String
+}
+
+input NewParticipant{
+  id_event: Int!
+  id_user: Int!
+  created_at: String
+  updated_at: String
+  deleted_at: String
 }
 
 type Mutation {
   createUser(input: NewUser!): User
   updateUser(input: NewUser!, id: Int!): ResponseMessage
   deleteUserByID(id: Int!): ResponseMessage
+  
+  createEvent(input: NewEvent!): Event
+  updateEvent(input: NewEvent!, id: Int!): ResponseMessage
+  deleteEventByID(id: Int!): ResponseMessage
+  
+  createComment(input: NewComment!): Comment
+  deleteCommentByID(id: Int!): ResponseMessage
+  
+  createParticipant(input: NewParticipant!): Participant
+  updateParticipant(input: NewParticipant!, id: Int!): ResponseMessage
+  deleteParticipantByID(id: Int!): ResponseMessage
 }
