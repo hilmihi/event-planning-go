@@ -28,7 +28,5 @@ jobs:
         port: ${{ secrets.PORT }}
         script: |
           cd event-planning-go
-          git pull origin main
-          cd my-datavolume/
-          sudo chmod 755 -R .
+          git pull origin main 
           docker-compose down && docker-compose up --build -d
