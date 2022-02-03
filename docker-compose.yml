@@ -12,6 +12,7 @@ services:
     volumes:
       # - './data:/bitnami/mysql/data'
       - './init:/docker-entrypoint-initdb.d'
+      - 'my-datavolume:/var/lib/mysql'
     healthcheck:
       test: ["CMD", "mysql", "-u", "root",  "-ptoor", "-e", "show schemas"]
       retries: 20

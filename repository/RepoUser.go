@@ -24,7 +24,7 @@ func NewRepositoryUser(db *sql.DB) *Repository_User {
 }
 
 func (r *Repository_User) FindByEmail(email string) (entities.User, error) {
-	row := r.db.QueryRow("select id, email, password from users where email=? and deleted_date is null", email)
+	row := r.db.QueryRow("select id, email, password from users where email=? and deleted_at is null", email)
 	var user entities.User
 
 	err := row.Scan(&user.Id, &user.Email, &user.Password)
@@ -38,7 +38,7 @@ func (r *Repository_User) FindByEmail(email string) (entities.User, error) {
 //get users
 func (r *Repository_User) GetUsers() ([]entities.User, error) {
 	var users []entities.User
-	results, err := r.db.Query("select id, name, email, birth_date, phone_number, photo, gender, address from users where deleted_date is null order by id asc")
+	results, err := r.db.Query("select id, name, email, birth_date, phone_number, photo, gender, address from users where deleted_at is null order by id asc")
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -64,7 +64,7 @@ func (r *Repository_User) GetUsers() ([]entities.User, error) {
 func (r *Repository_User) GetUser(id int) (entities.User, error) {
 	var user entities.User
 
-	row := r.db.QueryRow(`SELECT id, name, email, birth_date, phone_number, photo, gender, address FROM users WHERE id = ? AND deleted_date IS NULL`, id)
+	row := r.db.QueryRow(`SELECT id, name, email, birth_date, phone_number, photo, gender, address FROM users WHERE id = ? AND deleted_at IS NULL`, id)
 	fmt.Println(row)
 	err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Birth_date, &user.Phone_number, &user.Photo, &user.Gender, &user.Address)
 	if err != nil {
@@ -76,7 +76,7 @@ func (r *Repository_User) GetUser(id int) (entities.User, error) {
 
 //create user
 func (r *Repository_User) CreateUser(user entities.User) (entities.User, error) {
-	query := `INSERT INTO users (name, email, password, birth_date, phone_number, photo, gender, address, created_date, updated_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, now(), now())`
+	query := `INSERT INTO users (name, email, password, birth_date, phone_number, photo, gender, address, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, now(), now())`
 
 	statement, err := r.db.Prepare(query)
 	if err != nil {
@@ -95,7 +95,7 @@ func (r *Repository_User) CreateUser(user entities.User) (entities.User, error) 
 
 //update user
 func (r *Repository_User) UpdateUser(user entities.User) (entities.User, error) {
-	query := `UPDATE users SET name = ?, email = ?, birth_date = ?, phone_number = ?, photo = ?, gender = ?, address = ? WHERE id = ?`
+	query := `UPDATE users SET name = ?, email = ?, birth_date = ?, phone_number = ?, photo = ?, gender = ?, address = ?, updated_at = now() WHERE id = ?`
 
 	statement, err := r.db.Prepare(query)
 	if err != nil {
@@ -114,7 +114,7 @@ func (r *Repository_User) UpdateUser(user entities.User) (entities.User, error) 
 
 //delete user
 func (r *Repository_User) DeleteUser(user entities.User) (entities.User, error) {
-	query := `UPDATE users SET deleted_date = now() WHERE id = ?`
+	query := `UPDATE users SET deleted_at = now() WHERE id = ?`
 
 	statement, err := r.db.Prepare(query)
 	if err != nil {

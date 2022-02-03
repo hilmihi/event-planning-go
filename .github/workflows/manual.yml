@@ -27,8 +27,6 @@ jobs:
         key: ${{ secrets.KEY }}
         port: ${{ secrets.PORT }}
         script: |
-          echo 'PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
           cd event-planning-go
           git pull origin main
-          go test -v ./..
           docker-compose down && docker-compose up --build -d
