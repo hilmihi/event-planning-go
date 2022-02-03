@@ -21,42 +21,10 @@ type UserFormatter struct {
 	Email string `json:"email"`
 }
 
-type ResponseGetOrder struct {
-	Id        int              `json:"id" form:"id"`
-	Id_user   int              `json:"user_id"`
-	Quantity  int              `json:"quantity" form:"quantity"`
-	Sub_total float64          `json:"sub_total" form:"sub_total"`
-	Date      string           `json:"date" form:"date"`
-	Product   entities.Product `json:"product" form:"product"`
-	Status    string           `json:"status" form:"status"`
-}
-
-type ResponseGetOrderByID struct {
-	Id        int              `json:"id" form:"id"`
-	Id_user   int              `json:"user_id"`
-	Quantity  int              `json:"quantity" form:"quantity"`
-	Sub_total float64          `json:"sub_total" form:"sub_total"`
-	Date      string           `json:"date" form:"date"`
-	Product   ResponseProduct  `json:"product" form:"product"`
-	Status    string           `json:"status" form:"status"`
-	Address   entities.Address `json:"address" form:"address"`
-}
-
-type ResponseProduct struct {
-	entities.Product
-	Category string       `json:"category" form:"category"`
-	User     ResponseUser `json:"user" form:"user"`
-}
-
 type ResponseUser struct {
 	Id    int    `json:"id"`
 	Name  string `json:"name"`
 	Email string `json:"email"`
-}
-
-type ResponseCart struct {
-	entities.Cart
-	Product ResponseProduct2 `json:"product" form:"product"`
 }
 
 type ResponseProduct2 struct {
