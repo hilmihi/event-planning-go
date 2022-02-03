@@ -36,7 +36,7 @@ CREATE TABLE `eventkoe-project`.`event` (
   `id` int NOT NULL AUTO_INCREMENT,
   `id_user` int NOT NULL,
   `id_category` int NOT NULL,
-  `description` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
   `start_date` timestamp NOT NULL,
   `end_date` timestamp NOT NULL,
   `location` varchar(255) NOT NULL,
@@ -62,7 +62,7 @@ CREATE TABLE `eventkoe-project`.`comment` (
   `deleted_at` timestamp DEFAULT NULL,
   PRIMARY KEY(`id`),
   FOREIGN KEY(`id_user`) REFERENCES users(`id`),
-  FOREIGN KEY(`id_event`) REFERENCES event(`id`)
+  FOREIGN KEY(`id_event`) REFERENCES `event`(`id`)
 );
 
 -- create table participant
@@ -75,6 +75,6 @@ CREATE TABLE `eventkoe-project`.`participant` (
   `updated_at` timestamp DEFAULT NULL,
   `deleted_at` timestamp DEFAULT NULL,
   PRIMARY KEY(`id`),
-  FOREIGN KEY(`id_event`) REFERENCES event(`id`),
-  FOREIGN KEY(id_user) REFERENCES users(`id`)
+  FOREIGN KEY(`id_event`) REFERENCES `event`(`id`),
+  FOREIGN KEY(`id_user`) REFERENCES users(`id`)
 );
