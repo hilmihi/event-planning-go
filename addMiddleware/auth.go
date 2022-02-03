@@ -22,7 +22,7 @@ func AuthService() *jwtService {
 	return &jwtService{}
 }
 
-func (s *jwtService) GenerateToken(userId int) (string, error) {
+func GenerateToken(userId int) (string, error) {
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
 	claims["id"] = userId

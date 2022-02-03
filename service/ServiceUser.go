@@ -2,16 +2,19 @@ package service
 
 import (
 	"fmt"
+	addmiddleware "sirclo/api/addMiddleware"
 	"sirclo/api/entities"
+	"sirclo/api/graph/model"
 	"sirclo/api/helper"
 	"sirclo/api/repository"
 )
 
 type ServiceUser interface {
 	ServiceUserLogin(input helper.RequestUserLogin) (entities.User, error)
+	ServiceUserLoginGraph(input helper.RequestUserLogin) (string, error)
 	ServiceUsersGet() ([]entities.User, error)
 	ServiceUserGet(id int) (entities.User, error)
-	ServiceUserCreate(input entities.User) (entities.User, error)
+	ServiceUserCreate(input entities.User) (model.User, error)
 	ServiceUserUpdate(id int, input entities.User) (entities.User, error)
 	ServiceUserDelete(id int) (entities.User, error)
 }
@@ -46,6 +49,30 @@ func (su *serviceUser) ServiceUserLogin(input helper.RequestUserLogin) (entities
 	return user, nil
 }
 
+func (su *serviceUser) ServiceUserLoginGraph(input helper.RequestUserLogin) (string, error) {
+	email := input.Email
+	password := input.Password
+
+	var user entities.User
+	user, err := su.repository1.FindByEmail(email)
+	if err != nil {
+		return "", err
+	}
+
+	match, err := helper.CheckPasswordHash(password, user.Password)
+	if err != nil {
+		return "", err
+	}
+
+	if !match {
+		return "", fmt.Errorf("Email atau Password Anda Salah!")
+	}
+
+	token, err := addmiddleware.GenerateToken(user.Id)
+
+	return token, nil
+}
+
 func (su *serviceUser) ServiceUsersGet() ([]entities.User, error) {
 	users, err := su.repository1.GetUsers()
 	if err != nil {
@@ -62,22 +89,34 @@ func (s *serviceUser) ServiceUserGet(id int) (entities.User, error) {
 	return user, nil
 }
 
-func (s *serviceUser) ServiceUserCreate(input entities.User) (entities.User, error) {
+func (s *serviceUser) ServiceUserCreate(input entities.User) (model.User, error) {
 	var err error
 	input.Password, err = helper.HashPassword(input.Password)
 
 	if err != nil {
 		fmt.Println(err)
-		return input, err
+		return model.User{}, err
 	}
 
 	createUser, err := s.repository1.CreateUser(input)
 	if err != nil {
 		fmt.Println(err)
-		return createUser, err
+		return model.User{}, err
 	}
 
-	return createUser, nil
+	output := model.User{
+		ID:          createUser.Id,
+		Name:        createUser.Name,
+		Email:       createUser.Email,
+		Password:    createUser.Password,
+		BirthDate:   &createUser.Birth_date,
+		PhoneNumber: &createUser.Phone_number,
+		Photo:       &createUser.Phone_number,
+		Gender:      &createUser.Gender,
+		Address:     &createUser.Address,
+	}
+
+	return output, nil
 }
 
 func (s *serviceUser) ServiceUserUpdate(id int, input entities.User) (entities.User, error) {

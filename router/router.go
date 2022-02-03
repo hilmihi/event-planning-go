@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	addmiddleware "sirclo/api/addMiddleware"
-	"sirclo/api/controller"
 	"sirclo/api/repository"
 	"sirclo/api/service"
 
@@ -22,24 +21,14 @@ func InitRoute(db *sql.DB) *echo.Echo {
 	//setting cors
 	e.Use(middleware.CORSWithConfig(middleware.DefaultCORSConfig))
 
-	// e.Pre(middleware.RemoveTrailingSlash(), middleware.Logger())
-	authService := addmiddleware.AuthService()
+	e.Pre(middleware.RemoveTrailingSlash())
 
 	//User
 	UserRepository := repository.NewRepositoryUser(db)
 	UserService := service.NewUserService(UserRepository)
-	UserController := controller.NewUserController(authService, UserService)
 
 	client := _graph.NewResolver(UserService)
 	srv := NewGraphQLServer(client)
-
-	e.POST("/login", UserController.AuthUserController)
-	e.GET("/users", addmiddleware.AuthMiddleware(authService, UserService, UserController.GetUsersController))
-	e.GET("/users/:id", addmiddleware.AuthMiddleware(authService, UserService, UserController.GetUserController))
-	e.GET("/users/myprofile", addmiddleware.AuthMiddleware(authService, UserService, UserController.GetMyUserController))
-	e.POST("/users", UserController.CreateUserController)
-	e.PUT("/users/:id", addmiddleware.AuthMiddleware(authService, UserService, UserController.UpdateUserController))
-	e.DELETE("/users/:id", addmiddleware.AuthMiddleware(authService, UserService, UserController.DeleteUserController))
 
 	{
 		e.POST("/query", func(c echo.Context) error {

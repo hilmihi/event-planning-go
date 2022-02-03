@@ -17,7 +17,7 @@ WORKDIR /apps
 COPY . .
 
 # Build the Go app
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./app/
 
 # Start a new stage from scratch
 FROM alpine:latest
