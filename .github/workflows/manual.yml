@@ -30,5 +30,5 @@ jobs:
           echo 'PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
           cd event-planning-go
           git pull origin main
-          git test -v ./...
+          go test -v ./..
           docker-compose down && docker-compose up --build -d
