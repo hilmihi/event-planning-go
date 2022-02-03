@@ -13,9 +13,9 @@ CREATE TABLE `eventkoe-project`.`users` (
   `photo` varchar(1000),
   `gender` varchar(10) NOT NULL,
   `address` varchar(255) NOT NULL,
-  `created_at` timestamp DEFAULT NULL,
-  `updated_at` timestamp DEFAULT NULL,
-  `deleted_at` timestamp DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY(`id`)
 );
 
@@ -24,9 +24,9 @@ DROP TABLE IF EXISTS `eventkoe-project`.`category`;
 CREATE TABLE `eventkoe-project`.`category` (
   `id` int NOT NULL AUTO_INCREMENT,
   `description` varchar(255) NOT NULL,
-  `created_at` timestamp DEFAULT NULL,
-  `updated_at` timestamp DEFAULT NULL,
-  `deleted_at` timestamp DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY(`id`)
 );
 
@@ -37,14 +37,14 @@ CREATE TABLE `eventkoe-project`.`event` (
   `id_user` int NOT NULL,
   `id_category` int NOT NULL,
   `title` varchar(255) NOT NULL,
-  `start_date` timestamp NOT NULL,
-  `end_date` timestamp NOT NULL,
+  `start_date` datetime NOT NULL,
+  `end_date` datetime NOT NULL,
   `location` varchar(255) NOT NULL,
   `details` varchar(255) NOT NULL,
   `photo` varchar(1000),
-  `created_at` timestamp DEFAULT NULL,
-  `updated_at` timestamp DEFAULT NULL,
-  `deleted_at` timestamp DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY(`id`),
   FOREIGN KEY(`id_user`) REFERENCES users(`id`),
   FOREIGN KEY(`id_category`) REFERENCES category(`id`)
@@ -57,9 +57,9 @@ CREATE TABLE `eventkoe-project`.`comment` (
   `id_event` int NOT NULL,
   `id_user` int NOT NULL,
   `comment` varchar(255),
-  `created_at` timestamp DEFAULT NULL,
-  `updated_at` timestamp DEFAULT NULL,
-  `deleted_at` timestamp DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY(`id`),
   FOREIGN KEY(`id_user`) REFERENCES users(`id`),
   FOREIGN KEY(`id_event`) REFERENCES `event`(`id`)
@@ -71,9 +71,9 @@ CREATE TABLE `eventkoe-project`.`participant` (
   `id` int NOT NULL AUTO_INCREMENT,
   `id_event` int NOT NULL,
   `id_user` int NOT NULL,
-  `created_at` timestamp DEFAULT NULL,
-  `updated_at` timestamp DEFAULT NULL,
-  `deleted_at` timestamp DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY(`id`),
   FOREIGN KEY(`id_event`) REFERENCES `event`(`id`),
   FOREIGN KEY(`id_user`) REFERENCES users(`id`)
