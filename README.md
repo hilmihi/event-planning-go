@@ -2,7 +2,7 @@
 
 ## About The Project
 
-RESTFUL API for TakTuku an E-Commerce App created for the purpose of study.
+GRAPHQL Project for Event Planning
 
 Building the project with layered architecture, and clean code approach for the structure, with the intention of simplicity when the app is scaling up and ease of maintenance
 
@@ -16,15 +16,13 @@ This project structure is built using
 - [Golang]
 - [Mysql]
 - [Labstack/Echo]
+- [qraphql]
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ### Features
 
 - USERS CRUD
-- PRODUCT CRUD
-- CART CRUD
-- ORDER CR
 
 ### Folder Structure
 
@@ -49,7 +47,7 @@ To start project, just clone this repo
 
 1. Clone the repo
    ```bash
-   git clone https://github.com/hilmihi/e-commerce-project.git
+   git clone https://github.com/hilmihi/event-planning-go.git
    ```
 2. Create .env file in main directory
    ```bash
