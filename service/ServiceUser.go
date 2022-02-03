@@ -13,7 +13,7 @@ type ServiceUser interface {
 	ServiceUserLogin(input helper.RequestUserLogin) (entities.User, error)
 	ServiceUserLoginGraph(input helper.RequestUserLogin) (string, error)
 	ServiceUsersGet() ([]entities.User, error)
-	ServiceUserGet(id int) (entities.User, error)
+	ServiceUserGet(id int) (model.User, error)
 	ServiceUserCreate(input entities.User) (model.User, error)
 	ServiceUserUpdate(id int, input entities.User) (entities.User, error)
 	ServiceUserDelete(id int) (entities.User, error)
@@ -81,12 +81,25 @@ func (su *serviceUser) ServiceUsersGet() ([]entities.User, error) {
 	return users, nil
 }
 
-func (s *serviceUser) ServiceUserGet(id int) (entities.User, error) {
+func (s *serviceUser) ServiceUserGet(id int) (model.User, error) {
 	user, err := s.repository1.GetUser(id)
 	if err != nil {
-		return user, err
+		return model.User{}, err
 	}
-	return user, nil
+
+	output := model.User{
+		ID:          user.Id,
+		Name:        user.Name,
+		Email:       user.Email,
+		Password:    user.Password,
+		BirthDate:   &user.Birth_date,
+		PhoneNumber: &user.Phone_number,
+		Photo:       &user.Phone_number,
+		Gender:      &user.Gender,
+		Address:     &user.Address,
+	}
+
+	return output, nil
 }
 
 func (s *serviceUser) ServiceUserCreate(input entities.User) (model.User, error) {
@@ -135,9 +148,9 @@ func (s *serviceUser) ServiceUserUpdate(id int, input entities.User) (entities.U
 }
 
 func (s *serviceUser) ServiceUserDelete(id int) (entities.User, error) {
-	userID, err := s.ServiceUserGet(id)
+	userID, err := s.repository1.GetUser(id)
 	if err != nil {
-		return userID, err
+		return entities.User{}, err
 	}
 
 	deleteUser, err := s.repository1.DeleteUser(userID)

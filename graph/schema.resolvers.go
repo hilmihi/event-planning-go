@@ -13,18 +13,18 @@ import (
 )
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
-	new := entities.User{
-		Name:         input.Name,
-		Email:        input.Email,
-		Password:     input.Password,
-		Birth_date:   *input.BirthDate,
-		Phone_number: *input.PhoneNumber,
-		Photo:        *input.Photo,
-		Gender:       *input.Gender,
-		Address:      *input.Address,
+	new := &entities.User{
+		Name:     input.Name,
+		Email:    input.Email,
+		Password: input.Password,
 	}
 
-	resp, err := r.userService.ServiceUserCreate(new)
+	resp, err := r.userService.ServiceUserCreate(*new)
+
+	if err != nil {
+		fmt.Println("graph controller create user:", err)
+		return &model.User{}, err
+	}
 
 	return &resp, err
 }
@@ -92,6 +92,16 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	}
 
 	return userResponseData, nil
+}
+
+func (r *queryResolver) User(ctx context.Context, id int) (*model.User, error) {
+	responseData, err := r.userService.ServiceUserGet(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &responseData, nil
 }
 
 func (r *queryResolver) Login(ctx context.Context, email string, password string) (*model.ResponseLogin, error) {
