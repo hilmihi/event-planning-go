@@ -9,6 +9,7 @@ import (
 
 type ServiceParticipant interface {
 	ServiceParticipantCreate(input model.NewParticipant) (model.Participant, error)
+	ServiceParticipantsGet(int) ([]*model.Participant, error)
 }
 
 type serviceParticipant struct {
@@ -38,4 +39,28 @@ func (s *serviceParticipant) ServiceParticipantCreate(input model.NewParticipant
 	}
 
 	return output, nil
+}
+
+func (su *serviceParticipant) ServiceParticipantsGet(id_event int) ([]*model.Participant, error) {
+	comments, err := su.repository1.GetParticipant(id_event)
+	if err != nil {
+		return nil, err
+	}
+
+	var res []*model.Participant
+	for _, val := range comments {
+		name := val.Name
+		email := val.Email
+		photo := val.Photo
+		comment := model.Participant{
+			ID:      val.Id,
+			IDEvent: val.Id_event,
+			IDUser:  val.Id_user,
+			Name:    &name,
+			Email:   &email,
+			Photo:   &photo,
+		}
+		res = append(res, &comment)
+	}
+	return res, nil
 }
