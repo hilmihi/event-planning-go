@@ -72,3 +72,20 @@ func (re *Repository_Event) GetEvent(id int) (entities.Event, error) {
 
 	return event, nil
 }
+
+// Update Event
+func (re *Repository_Event) UpdateEvent(event entities.Event) (entities.Event, error) {
+	query := `UPDATE event SET id = ?, id_user = ?, id_category = ?, title = ?, start_date = ?, end_date = ?, location = ?, details = ?, photo = ?, updated_at = now() WHERE id = ?`
+
+	statement, err := re.db.Prepare(query)
+	if err != nil {
+		return event, err
+	}
+	defer statement.Close()
+
+	_, err = statement.Exec(event.Id, event.Id_user, event.Id_category, event.Title, event.Start_date, event.End_date, event.Location, event.Details, event.Photo)
+	if err != nil {
+		return event, err
+	}
+	return event, nil
+}
