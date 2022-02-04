@@ -7,7 +7,7 @@ import (
 )
 
 type RepositoryParticipant interface {
-	GetComments(int) ([]entities.Participant, error)
+	GetParticipant(int) ([]entities.Participant, error)
 	CreateParticipant(user entities.Participant) (entities.Participant, error)
 }
 
@@ -20,9 +20,12 @@ func NewRepositoryParticipant(db *sql.DB) *Repository_Participant {
 }
 
 //get users
-func (r *Repository_Participant) GetComments(id_event int) ([]entities.Participant, error) {
-	var comments []entities.Participant
-	results, err := r.db.Query("select id, id_event, id_user, comment, created_at from comment where deleted_at is null order by created_at asc")
+func (r *Repository_Participant) GetParticipant(id_event int) ([]entities.Participant, error) {
+	var participants []entities.Participant
+	results, err := r.db.Query(`select p.id, p.id_user, p.id_event, u.name, u.email, u.photo
+								from participant p
+								join users on u.id = p.id_user
+								where deleted_at is null order by created_at asc`)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -31,17 +34,17 @@ func (r *Repository_Participant) GetComments(id_event int) ([]entities.Participa
 	defer results.Close()
 
 	for results.Next() {
-		var comment entities.Participant
+		var participant entities.Participant
 
-		err = results.Scan(&comment.Id, &comment.Id_event, &comment.Id_user)
+		err = results.Scan(&participant.Id, &participant.Id_user, &participant.Id_event, &participant.Name, &participant.Email, &participant.Photo)
 		if err != nil {
 			fmt.Println(err)
 			return nil, err
 		}
 
-		comments = append(comments, comment)
+		participants = append(participants, participant)
 	}
-	return comments, nil
+	return participants, nil
 }
 
 //create user
