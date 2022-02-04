@@ -101,6 +101,11 @@ func (s *serviceUser) ServiceUserGet(id int) (model.User, error) {
 
 func (s *serviceUser) ServiceUserCreate(input entities.User) (model.User, error) {
 	var err error
+	user, _ := s.repository1.FindByEmail(input.Email)
+	if user.Email == input.Email {
+		return model.User{}, fmt.Errorf("Email sudah terdaftar")
+	}
+
 	input.Password, err = helper.HashPassword(input.Password)
 
 	if err != nil {

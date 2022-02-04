@@ -15,6 +15,9 @@ type Comment struct {
 	IDEvent   int     `json:"id_event"`
 	IDUser    int     `json:"id_user"`
 	Comment   *string `json:"comment"`
+	Name      *string `json:"name"`
+	Email     *string `json:"email"`
+	Photo     *string `json:"photo"`
 	CreatedAt *string `json:"created_at"`
 	UpdatedAt *string `json:"updated_at"`
 	DeletedAt *string `json:"deleted_at"`
@@ -36,20 +39,20 @@ type Event struct {
 }
 
 type EventDetail struct {
-	ID          int          `json:"id"`
-	IDUser      int          `json:"id_user"`
-	IDCategory  int          `json:"id_category"`
-	Title       string       `json:"title"`
-	StartDate   string       `json:"start_date"`
-	EndDate     string       `json:"end_date"`
-	Location    string       `json:"location"`
-	Details     string       `json:"details"`
-	Photo       *string      `json:"photo"`
-	CreatedAt   *string      `json:"created_at"`
-	UpdatedAt   *string      `json:"updated_at"`
-	DeletedAt   *string      `json:"deleted_at"`
-	Comments    *Comment     `json:"comments"`
-	Participant *Participant `json:"participant"`
+	ID          int            `json:"id"`
+	IDUser      int            `json:"id_user"`
+	IDCategory  int            `json:"id_category"`
+	Title       string         `json:"title"`
+	StartDate   string         `json:"start_date"`
+	EndDate     string         `json:"end_date"`
+	Location    string         `json:"location"`
+	Details     string         `json:"details"`
+	Photo       *string        `json:"photo"`
+	CreatedAt   *string        `json:"created_at"`
+	UpdatedAt   *string        `json:"updated_at"`
+	DeletedAt   *string        `json:"deleted_at"`
+	Comments    []*Comment     `json:"comments"`
+	Participant []*Participant `json:"participant"`
 }
 
 type NewComment struct {
@@ -101,6 +104,9 @@ type Participant struct {
 	ID        int     `json:"id"`
 	IDEvent   int     `json:"id_event"`
 	IDUser    int     `json:"id_user"`
+	Name      *string `json:"name"`
+	Email     *string `json:"email"`
+	Photo     *string `json:"photo"`
 	CreatedAt *string `json:"created_at"`
 	UpdatedAt *string `json:"updated_at"`
 	DeletedAt *string `json:"deleted_at"`

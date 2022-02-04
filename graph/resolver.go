@@ -13,16 +13,20 @@ import (
 
 type Resolver struct {
 	// db      *gorm.DB
-	userService service.ServiceUser
+	userService        service.ServiceUser
+	commentService     service.ServiceComment
+	participantService service.ServiceParticipant
 	// tmpList  []*_graphModel.User
 	// Observer map[string]chan []*model.Person
 	// Observer map[string]chan *_graphModel.User
 	// mu sync.Mutex
 }
 
-func NewResolver(ur service.ServiceUser) *Resolver {
+func NewResolver(ur service.ServiceUser, cs service.ServiceComment, ps service.ServiceParticipant) *Resolver {
 	return &Resolver{
-		userService: ur,
+		userService:        ur,
+		commentService:     cs,
+		participantService: ps,
 		// tmpList:  []*_graphModel.User{},
 		// Observer: map[string]chan *_graphModel.User{},
 		// mu:       sync.Mutex{},
