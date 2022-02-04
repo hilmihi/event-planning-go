@@ -89,3 +89,21 @@ func (re *Repository_Event) UpdateEvent(event entities.Event) (entities.Event, e
 	}
 	return event, nil
 }
+
+// delete event
+func (re *Repository_Event) DeleteEvent(event entities.Event) (entities.Event, error) {
+	query := `UPDATE event SET deleted_at = now() WHERE id = ?`
+
+	statement, err := re.db.Prepare(query)
+	if err != nil {
+		return event, err
+	}
+	defer statement.Close()
+
+	_, err = statement.Exec(event.Id)
+	if err != nil {
+		return event, err
+	}
+
+	return event, nil
+}
