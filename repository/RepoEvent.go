@@ -42,3 +42,20 @@ func (re *Repository_Event) GetEvents() ([]entities.Event, error) {
 	}
 	return events, nil
 }
+
+// create event
+func (re *Repository_Event) CreateEvent(event entities.Event) (entities.Event, error) {
+	query := `INSERT INTO event (id_user, id_category, title, start_date, end_date, location, details, photo, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, now())`
+
+	statement, err := re.db.Prepare(query)
+	if err != nil {
+		return event, err
+	}
+	defer statement.Close()
+
+	_, err = statement.Exec(event.Id_user, event.Id_category, event.Title, event.Start_date, event.End_date, event.Location, event.Details, event.Photo)
+	if err != nil {
+		return event, err
+	}
+	return event, nil
+}
