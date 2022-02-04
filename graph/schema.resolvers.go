@@ -79,7 +79,19 @@ func (r *mutationResolver) DeleteEventByID(ctx context.Context, id int) (*model.
 }
 
 func (r *mutationResolver) CreateComment(ctx context.Context, input model.NewComment) (*model.Comment, error) {
-	panic(fmt.Errorf("not implemented"))
+	auth_user := ctx.Value("EchoContextKey").(int)
+	if auth_user == 0 {
+		return &model.Comment{}, fmt.Errorf("Not Authorized")
+	}
+
+	resp, err := r.commentService.ServiceCommentCreate(input)
+
+	if err != nil {
+		fmt.Println("graph controller create Comment:", err)
+		return &model.Comment{}, err
+	}
+
+	return &resp, err
 }
 
 func (r *mutationResolver) DeleteCommentByID(ctx context.Context, id int) (*model.ResponseMessage, error) {
@@ -87,7 +99,19 @@ func (r *mutationResolver) DeleteCommentByID(ctx context.Context, id int) (*mode
 }
 
 func (r *mutationResolver) CreateParticipant(ctx context.Context, input model.NewParticipant) (*model.Participant, error) {
-	panic(fmt.Errorf("not implemented"))
+	auth_user := ctx.Value("EchoContextKey").(int)
+	if auth_user == 0 {
+		return &model.Participant{}, fmt.Errorf("Not Authorized")
+	}
+
+	resp, err := r.participantService.ServiceParticipantCreate(input)
+
+	if err != nil {
+		fmt.Println("graph controller create Comment:", err)
+		return &model.Participant{}, err
+	}
+
+	return &resp, err
 }
 
 func (r *mutationResolver) UpdateParticipant(ctx context.Context, input model.NewParticipant, id int) (*model.ResponseMessage, error) {
@@ -147,7 +171,18 @@ func (r *queryResolver) Category(ctx context.Context) ([]*model.Category, error)
 }
 
 func (r *queryResolver) Comments(ctx context.Context, idEvent int) ([]*model.Comment, error) {
-	panic(fmt.Errorf("not implemented"))
+	auth_user := ctx.Value("EchoContextKey").(int)
+	if auth_user == 0 {
+		return nil, fmt.Errorf("Not Authorized")
+	}
+
+	responseData, err := r.commentService.ServiceCommentsGet(idEvent)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return responseData, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
