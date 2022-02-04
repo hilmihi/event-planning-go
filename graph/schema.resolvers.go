@@ -125,7 +125,13 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 }
 
 func (r *queryResolver) UsersByID(ctx context.Context, id *int) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
+	responseData, err := r.userService.ServiceUserGet(*id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &responseData, nil
 }
 
 func (r *queryResolver) Events(ctx context.Context) ([]*model.Event, error) {
