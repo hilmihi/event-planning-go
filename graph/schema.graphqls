@@ -70,8 +70,8 @@ type EventDetail{
   created_at: String
   updated_at: String
   deleted_at: String
-  comments: Comment
-  participant: Participant
+  comments: [Comment]
+  participant: [Participant]
 }
 
 type Comment{
@@ -79,6 +79,9 @@ type Comment{
   id_event: Int!
   id_user: Int!
   comment: String
+  name: String
+  email: String
+  photo: String
   created_at: String
   updated_at: String
   deleted_at: String
@@ -88,6 +91,9 @@ type Participant{
     id: Int!
     id_event: Int!
     id_user: Int!
+    name: String
+    email: String
+    photo: String
     created_at: String
     updated_at: String
     deleted_at: String
