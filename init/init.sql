@@ -8,7 +8,7 @@ CREATE TABLE `eventkoe-project`.`users` (
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password` varchar(1000) NOT NULL,
-  `birth_date` date,
+  `birth_date` varchar(255),
   `phone_number` varchar(50),
   `photo` varchar(1000),
   `gender` varchar(10),
