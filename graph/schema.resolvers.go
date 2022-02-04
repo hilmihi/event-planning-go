@@ -67,10 +67,11 @@ func (r *mutationResolver) DeleteUserByID(ctx context.Context, id int) (*model.R
 }
 
 func (r *mutationResolver) CreateEvent(ctx context.Context, input model.NewEvent) (*model.Event, error) {
-	// auth_user := ctx.Value("EchoContextKey").(int)
-	// if auth_user == 0 {
-	// 	return &model.ResponseMessage{Code: 400, Message: "Not Authorized"}, fmt.Errorf("Not Authorized")
-	// }
+	auth_user := ctx.Value("EchoContextKey")
+	fmt.Println("ini auth", auth_user)
+	if auth_user == nil {
+		return &model.Event{}, fmt.Errorf("Not Authorized")
+	}
 
 	new := &entities.Event{
 		Id_user:     input.IDUser,
@@ -91,14 +92,6 @@ func (r *mutationResolver) CreateEvent(ctx context.Context, input model.NewEvent
 	}
 
 	return &resp, err
-
-	// _, err := r.eventService.ServiceEventCreate(*new)
-
-	// if err != nil {
-	// 	return &model.ResponseMessage{Code: 500, Message: "Internal Server Error"}, err
-	// }
-
-	// return &model.ResponseMessage{Code: 200, Message: "Succesfull Operation"}, err
 }
 
 func (r *mutationResolver) UpdateEvent(ctx context.Context, input model.NewEvent, id int) (*model.ResponseMessage, error) {
