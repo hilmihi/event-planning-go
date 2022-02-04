@@ -20,22 +20,22 @@ type ResponseLogin {
 }
 
 type User {
-  id: Int
+  id: Int!
   name: String!
   email: String!
   password: String!
-  birth_date: String!
-  phone_number: String!
+  birth_date: String
+  phone_number: String
   photo: String
-  gender: String!
-  address: String!
+  gender: String
+  address: String
   created_at: String
   updated_at: String
   deleted_at: String
 }
 
 type Category{
-  id: Int
+  id: Int!
   description: String!
   created_at: String
   updated_at: String
@@ -43,7 +43,7 @@ type Category{
 }
 
 type Event{
-  id: Int 
+  id: Int!
   id_user: Int!
   id_category: Int!
   title: String!
@@ -58,7 +58,7 @@ type Event{
 }
 
 type EventDetail{
-  id: Int 
+  id: Int! 
   id_user: Int!
   id_category: Int!
   title: String!
@@ -75,7 +75,7 @@ type EventDetail{
 }
 
 type Comment{
-  id: Int
+  id: Int!
   id_event: Int!
   id_user: Int!
   comment: String
@@ -85,7 +85,7 @@ type Comment{
 }
 
 type Participant{
-    id: Int
+    id: Int!
     id_event: Int!
     id_user: Int!
     created_at: String
@@ -97,12 +97,12 @@ type Query {
   login(email: String!, password: String!): ResponseLogin!
   
   users: [User!]!
-  usersById(id:int): User!
+  usersById(id:Int): User!
   
   events: [Event!]!
   eventsById(id: Int): EventDetail!
   
-  category: [category!]!
+  category: [Category!]!
   
   comments(id_event: Int!):[Comment!]!
 
@@ -112,11 +112,11 @@ input NewUser {
   name: String!
   email: String!
   password: String!
-  birth_date: String!
-  phone_number: String!
+  birth_date: String
+  phone_number: String
   photo: String
-  gender: String!
-  address: String!
+  gender: String
+  address: String
   created_at: String
   updated_at: String
   deleted_at: String

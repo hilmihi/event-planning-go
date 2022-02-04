@@ -11,7 +11,7 @@ import (
 
 type ServiceUser interface {
 	ServiceUserLogin(input helper.RequestUserLogin) (entities.User, error)
-	ServiceUserLoginGraph(input helper.RequestUserLogin) (string, error)
+	ServiceUserLoginGraph(string, string) (string, error)
 	ServiceUsersGet() ([]entities.User, error)
 	ServiceUserGet(id int) (model.User, error)
 	ServiceUserCreate(input entities.User) (model.User, error)
@@ -49,10 +49,7 @@ func (su *serviceUser) ServiceUserLogin(input helper.RequestUserLogin) (entities
 	return user, nil
 }
 
-func (su *serviceUser) ServiceUserLoginGraph(input helper.RequestUserLogin) (string, error) {
-	email := input.Email
-	password := input.Password
-
+func (su *serviceUser) ServiceUserLoginGraph(email, password string) (string, error) {
 	var user entities.User
 	user, err := su.repository1.FindByEmail(email)
 	if err != nil {
