@@ -16,17 +16,19 @@ type Resolver struct {
 	userService        service.ServiceUser
 	commentService     service.ServiceComment
 	participantService service.ServiceParticipant
+	eventService       service.ServiceEvent
 	// tmpList  []*_graphModel.User
 	// Observer map[string]chan []*model.Person
 	// Observer map[string]chan *_graphModel.User
 	// mu sync.Mutex
 }
 
-func NewResolver(ur service.ServiceUser, cs service.ServiceComment, ps service.ServiceParticipant) *Resolver {
+func NewResolver(ur service.ServiceUser, cs service.ServiceComment, ps service.ServiceParticipant, er service.ServiceEvent) *Resolver {
 	return &Resolver{
 		userService:        ur,
 		commentService:     cs,
 		participantService: ps,
+		eventService:       er,
 		// tmpList:  []*_graphModel.User{},
 		// Observer: map[string]chan *_graphModel.User{},
 		// mu:       sync.Mutex{},

@@ -162,7 +162,7 @@ type MutationResolver interface {
 	CreateUser(ctx context.Context, input model.NewUser) (*model.User, error)
 	UpdateUser(ctx context.Context, input model.NewUser, id int) (*model.ResponseMessage, error)
 	DeleteUserByID(ctx context.Context, id int) (*model.ResponseMessage, error)
-	CreateEvent(ctx context.Context, input model.NewEvent) (*model.Event, error)
+	CreateEvent(ctx context.Context, input model.NewEvent) (*model.ResponseMessage, error)
 	UpdateEvent(ctx context.Context, input model.NewEvent, id int) (*model.ResponseMessage, error)
 	DeleteEventByID(ctx context.Context, id int) (*model.ResponseMessage, error)
 	CreateComment(ctx context.Context, input model.NewComment) (*model.Comment, error)
@@ -1089,7 +1089,7 @@ type Mutation {
   updateUser(input: NewUser!, id: Int!): ResponseMessage
   deleteUserByID(id: Int!): ResponseMessage
   
-  createEvent(input: NewEvent!): Event
+  createEvent(input: NewEvent!): ResponseMessage
   updateEvent(input: NewEvent!, id: Int!): ResponseMessage
   deleteEventByID(id: Int!): ResponseMessage
   
@@ -2963,9 +2963,9 @@ func (ec *executionContext) _Mutation_createEvent(ctx context.Context, field gra
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.Event)
+	res := resTmp.(*model.ResponseMessage)
 	fc.Result = res
-	return ec.marshalOEvent2ᚖsircloᚋapiᚋgraphᚋmodelᚐEvent(ctx, field.Selections, res)
+	return ec.marshalOResponseMessage2ᚖsircloᚋapiᚋgraphᚋmodelᚐResponseMessage(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_updateEvent(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -7964,13 +7964,6 @@ func (ec *executionContext) marshalOComment2ᚖsircloᚋapiᚋgraphᚋmodelᚐCo
 		return graphql.Null
 	}
 	return ec._Comment(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOEvent2ᚖsircloᚋapiᚋgraphᚋmodelᚐEvent(ctx context.Context, sel ast.SelectionSet, v *model.Event) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Event(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {

@@ -8,7 +8,7 @@ import (
 
 type ServiceEvent interface {
 	ServiceEventsGet() ([]entities.Event, error)
-	ServiceEventGet(id int) (model.Event, error)
+	ServiceEventGet(id int) (model.EventDetail, error)
 	ServiceEventCreate(input entities.Event) (model.Event, error)
 	ServiceEventUpdate(id int, input model.NewEvent) error
 	ServiceEventDelete(id int) (entities.Event, error)

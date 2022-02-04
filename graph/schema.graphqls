@@ -164,7 +164,7 @@ type Mutation {
   updateUser(input: NewUser!, id: Int!): ResponseMessage
   deleteUserByID(id: Int!): ResponseMessage
   
-  createEvent(input: NewEvent!): Event
+  createEvent(input: NewEvent!): ResponseMessage
   updateEvent(input: NewEvent!, id: Int!): ResponseMessage
   deleteEventByID(id: Int!): ResponseMessage
   
