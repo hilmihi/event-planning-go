@@ -66,11 +66,11 @@ func (r *mutationResolver) DeleteUserByID(ctx context.Context, id int) (*model.R
 	return &model.ResponseMessage{Code: 200, Message: "Succesfull Operation"}, err
 }
 
-func (r *mutationResolver) CreateEvent(ctx context.Context, input model.NewEvent) (*model.ResponseMessage, error) {
-	auth_user := ctx.Value("EchoContextKey").(int)
-	if auth_user == 0 {
-		return &model.ResponseMessage{Code: 400, Message: "Not Authorized"}, fmt.Errorf("Not Authorized")
-	}
+func (r *mutationResolver) CreateEvent(ctx context.Context, input model.NewEvent) (*model.Event, error) {
+	// auth_user := ctx.Value("EchoContextKey").(int)
+	// if auth_user == 0 {
+	// 	return &model.ResponseMessage{Code: 400, Message: "Not Authorized"}, fmt.Errorf("Not Authorized")
+	// }
 
 	new := &entities.Event{
 		Id_user:     input.IDUser,
@@ -83,13 +83,22 @@ func (r *mutationResolver) CreateEvent(ctx context.Context, input model.NewEvent
 		Photo:       *input.Photo,
 	}
 
-	_, err := r.eventService.ServiceEventCreate(*new)
+	resp, err := r.eventService.ServiceEventCreate(*new)
 
 	if err != nil {
-		return &model.ResponseMessage{Code: 500, Message: "Internal Server Error"}, err
+		fmt.Println("graph controller create event:", err)
+		return &model.Event{}, err
 	}
 
-	return &model.ResponseMessage{Code: 200, Message: "Succesfull Operation"}, err
+	return &resp, err
+
+	// _, err := r.eventService.ServiceEventCreate(*new)
+
+	// if err != nil {
+	// 	return &model.ResponseMessage{Code: 500, Message: "Internal Server Error"}, err
+	// }
+
+	// return &model.ResponseMessage{Code: 200, Message: "Succesfull Operation"}, err
 }
 
 func (r *mutationResolver) UpdateEvent(ctx context.Context, input model.NewEvent, id int) (*model.ResponseMessage, error) {
