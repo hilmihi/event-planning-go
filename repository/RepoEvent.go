@@ -63,7 +63,7 @@ func (re *Repository_Event) CreateEvent(event entities.Event) (entities.Event, e
 // get event by id
 func (re *Repository_Event) GetEvent(id int) (entities.Event, error) {
 	var event entities.Event
-	result := re.db.QueryRow(`select id, id_user, id_category, title, start_date, end_date, location, details, photo, from event WHERE deleted_at IS NULL AND id = ?`)
+	result := re.db.QueryRow(`select id, id_user, id_category, title, start_date, end_date, location, details, photo from event WHERE id=? AND deleted_at IS NULL`, id)
 
 	err := result.Scan(&event.Id, &event.Id_user, &event.Id_category, &event.Title, &event.Start_date, &event.End_date, &event.Location, &event.Details, &event.Photo)
 	if err != nil {
@@ -83,7 +83,7 @@ func (re *Repository_Event) UpdateEvent(event entities.Event) (entities.Event, e
 	}
 	defer statement.Close()
 
-	_, err = statement.Exec(event.Id, event.Id_user, event.Id_category, event.Title, event.Start_date, event.End_date, event.Location, event.Details, event.Photo)
+	_, err = statement.Exec(event.Id, event.Id_user, event.Id_category, event.Title, event.Start_date, event.End_date, event.Location, event.Details, event.Photo, event.Id)
 	if err != nil {
 		return event, err
 	}
