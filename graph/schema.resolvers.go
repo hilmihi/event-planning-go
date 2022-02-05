@@ -67,15 +67,63 @@ func (r *mutationResolver) DeleteUserByID(ctx context.Context, id int) (*model.R
 }
 
 func (r *mutationResolver) CreateEvent(ctx context.Context, input model.NewEvent) (*model.Event, error) {
-	panic(fmt.Errorf("not implemented"))
+	auth_user := ctx.Value("EchoContextKey")
+
+	if auth_user == nil {
+		return &model.Event{}, fmt.Errorf("Not Authorized")
+	}
+
+	new := &entities.Event{
+		Id_user:     auth_user.(int),
+		Id_category: input.IDCategory,
+		Title:       input.Title,
+		Start_date:  input.StartDate,
+		End_date:    input.EndDate,
+		Location:    input.Location,
+		Details:     input.Details,
+		Photo:       *input.Photo,
+	}
+
+	resp, err := r.eventService.ServiceEventCreate(*new)
+
+	if err != nil {
+		fmt.Println("graph controller create event:", err)
+		return &model.Event{}, err
+	}
+
+	return &resp, err
 }
 
 func (r *mutationResolver) UpdateEvent(ctx context.Context, input model.NewEvent, id int) (*model.ResponseMessage, error) {
-	panic(fmt.Errorf("not implemented"))
+	auth_user := ctx.Value("EchoContextKey")
+	if auth_user == nil {
+		return &model.ResponseMessage{Code: 400, Message: "Not Authorized"}, fmt.Errorf("Not Authorized")
+	}
+
+	event, err := r.eventService.ServiceEventUpdate(id, input)
+	if auth_user.(int) != event.Id_user {
+		return &model.ResponseMessage{Code: 400, Message: "Not Allowed"}, fmt.Errorf("Not Authorized")
+	}
+	if err != nil {
+		return &model.ResponseMessage{Code: 500, Message: "Internal Server Error"}, err
+	}
+
+	return &model.ResponseMessage{Code: 200, Message: "Succesfull Operation"}, err
 }
 
 func (r *mutationResolver) DeleteEventByID(ctx context.Context, id int) (*model.ResponseMessage, error) {
-	panic(fmt.Errorf("not implemented"))
+	auth_user := ctx.Value("EchoContextKey")
+	if auth_user == nil {
+		return &model.ResponseMessage{Code: 400, Message: "Not Authorized"}, fmt.Errorf("Not Authorized")
+	}
+	event, err := r.eventService.ServiceEventDelete(id)
+	if auth_user.(int) != event.Id_user {
+		return &model.ResponseMessage{Code: 400, Message: "Not Allowed"}, fmt.Errorf("Not Authorized")
+	}
+	if err != nil {
+		return &model.ResponseMessage{Code: 500, Message: "Internal Server Error"}, err
+	}
+	return &model.ResponseMessage{Code: 200, Message: "Succesfull Operation"}, err
 }
 
 func (r *mutationResolver) CreateComment(ctx context.Context, input model.NewComment) (*model.Comment, error) {
@@ -159,7 +207,19 @@ func (r *queryResolver) UsersByID(ctx context.Context, id *int) (*model.User, er
 }
 
 func (r *queryResolver) Events(ctx context.Context) ([]*model.Event, error) {
-	panic(fmt.Errorf("not implemented"))
+	responseData, err := r.eventService.ServiceEventsGet()
+
+	if err != nil {
+		return nil, err
+	}
+
+	eventResponseData := []*model.Event{}
+
+	for _, v := range responseData {
+		eventResponseData = append(eventResponseData, &model.Event{ID: v.Id, IDUser: &v.Id_user, IDCategory: v.Id_category, Title: v.Title, StartDate: v.Start_date, EndDate: v.End_date, Location: v.Location, Details: v.Details, Photo: &v.Photo})
+	}
+
+	return eventResponseData, nil
 }
 
 func (r *queryResolver) EventsByID(ctx context.Context, id *int) (*model.EventDetail, error) {

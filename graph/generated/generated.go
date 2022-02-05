@@ -969,7 +969,7 @@ type Category{
 
 type Event{
   id: Int!
-  id_user: Int!
+  id_user: Int
   id_category: Int!
   title: String!
   start_date: String!
@@ -1054,7 +1054,7 @@ input NewUser {
 }
 
 input NewEvent{
-  id_user: Int!
+  id_user: Int
   id_category: Int!
   title: String!
   start_date: String!
@@ -1992,14 +1992,11 @@ func (ec *executionContext) _Event_id_user(ctx context.Context, field graphql.Co
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(*int)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Event_id_category(ctx context.Context, field graphql.CollectedField, obj *model.Event) (ret graphql.Marshaler) {
@@ -5623,7 +5620,7 @@ func (ec *executionContext) unmarshalInputNewEvent(ctx context.Context, obj inte
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id_user"))
-			it.IDUser, err = ec.unmarshalNInt2int(ctx, v)
+			it.IDUser, err = ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6068,9 +6065,6 @@ func (ec *executionContext) _Event(ctx context.Context, sel ast.SelectionSet, ob
 
 			out.Values[i] = innerFunc(ctx)
 
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "id_category":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Event_id_category(ctx, field, obj)

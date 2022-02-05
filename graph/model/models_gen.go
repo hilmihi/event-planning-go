@@ -25,7 +25,7 @@ type Comment struct {
 
 type Event struct {
 	ID         int     `json:"id"`
-	IDUser     int     `json:"id_user"`
+	IDUser     *int    `json:"id_user"`
 	IDCategory int     `json:"id_category"`
 	Title      string  `json:"title"`
 	StartDate  string  `json:"start_date"`
@@ -65,7 +65,7 @@ type NewComment struct {
 }
 
 type NewEvent struct {
-	IDUser     int     `json:"id_user"`
+	IDUser     *int    `json:"id_user"`
 	IDCategory int     `json:"id_category"`
 	Title      string  `json:"title"`
 	StartDate  string  `json:"start_date"`

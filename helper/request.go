@@ -1,6 +1,8 @@
 package helper
 
-import "sirclo/api/entities"
+import (
+	"sirclo/api/entities"
+)
 
 type RequestUserLogin struct {
 	Email    string `json:"email" form:"email"`
@@ -24,16 +26,24 @@ type RequestUserUpdate struct {
 	Password string `json:"password" form:"password"`
 }
 
-type RequestProductCreate struct {
-	UserID      entities.User `json:"userID" form:"userID"`
-	Name        string        `json:"name" form:"name"`
-	Description string        `json:"description" form:"description"`
-	Price       float64       `json:"price" form:"price"`
+type RequestEventCreate struct {
+	Id_user     entities.User     `json:"id_uesr" form:"id_user"`
+	Id_category entities.Category `json:"id_category" form:"id_category"`
+	Title       string            `json:"title" form:"title"`
+	Start_date  string            `json:"start_date" form:"start_date"`
+	End_date    string            `json:"end_date" form:"end_date"`
+	Location    string            `json:"location" form:"location"`
+	Details     string            `json:"details" form:"details"`
+	Photo       string            `json:"photo" form:"photo"`
 }
 
 type RequestProductUpdate struct {
-	UserID      entities.User `json:"userID" form:"userID"`
-	Name        string        `json:"name" form:"name"`
-	Description string        `json:"description" form:"description"`
-	Price       float64       `json:"price" form:"price"`
+	Id_user     entities.User     `json:"id_uesr" form:"id_user"`
+	Id_category entities.Category `json:"id_category" form:"id_category"`
+	Title       string            `json:"title" form:"title"`
+	Start_date  string            `json:"start_date" form:"start_date"`
+	End_date    string            `json:"end_date" form:"end_date"`
+	Location    string            `json:"location" form:"location"`
+	Details     string            `json:"details" form:"details"`
+	Photo       string            `json:"photo" form:"photo"`
 }
