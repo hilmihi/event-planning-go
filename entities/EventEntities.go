@@ -10,6 +10,7 @@ type Event struct {
 	Location    string `json:"location"`
 	Details     string `json:"details"`
 	Photo       string `json:"photo"`
+	HostedBy    string `json:"hosted_by"`
 	Created_at  string `json:"created_at"`
 	Updated_at  string `json:"updated_at"`
 	Deleted_at  string `json:"deleted_at"`

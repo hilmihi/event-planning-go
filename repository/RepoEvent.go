@@ -24,7 +24,10 @@ func NewRepositoryEvent(db *sql.DB) *Repository_Event {
 // get events
 func (re *Repository_Event) GetEvents() ([]entities.Event, error) {
 	var events []entities.Event
-	result, err := re.db.Query(`select id, id_user, id_category, title, start_date, end_date, location, details, photo from event WHERE deleted_at IS NULL`)
+	result, err := re.db.Query(`select e.id, e.id_user, e.id_category, e.title, e.start_date, e.end_date, e.location, e.details, e.photo, u.name
+								from event e 
+								join users u on u.id = e.id_user and u.deleted_at is null
+								WHERE e.deleted_at IS NULL`)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +36,7 @@ func (re *Repository_Event) GetEvents() ([]entities.Event, error) {
 
 	for result.Next() {
 		var event entities.Event
-		err = result.Scan(&event.Id, &event.Id_user, &event.Id_category, &event.Title, &event.Start_date, &event.End_date, &event.Location, &event.Details, &event.Photo)
+		err = result.Scan(&event.Id, &event.Id_user, &event.Id_category, &event.Title, &event.Start_date, &event.End_date, &event.Location, &event.Details, &event.Photo, &event.HostedBy)
 		if err != nil {
 			return nil, err
 		}
@@ -63,9 +66,12 @@ func (re *Repository_Event) CreateEvent(event entities.Event) (entities.Event, e
 // get event by id
 func (re *Repository_Event) GetEvent(id int) (entities.Event, error) {
 	var event entities.Event
-	result := re.db.QueryRow(`select id, id_user, id_category, title, start_date, end_date, location, details, photo from event WHERE id=? AND deleted_at IS NULL`, id)
+	result := re.db.QueryRow(`select e.id, e.id_user, e.id_category, e.title, e.start_date, e.end_date, e.location, e.details, e.photo, u.name
+								from event e 
+								join users u on u.id = e.id_user and u.deleted_at is null
+								WHERE e.deleted_at IS NULL AND e.id=? `, id)
 
-	err := result.Scan(&event.Id, &event.Id_user, &event.Id_category, &event.Title, &event.Start_date, &event.End_date, &event.Location, &event.Details, &event.Photo)
+	err := result.Scan(&event.Id, &event.Id_user, &event.Id_category, &event.Title, &event.Start_date, &event.End_date, &event.Location, &event.Details, &event.Photo, &event.HostedBy)
 	if err != nil {
 		return event, err
 	}

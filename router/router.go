@@ -37,7 +37,7 @@ func InitRoute(db *sql.DB) *echo.Echo {
 
 	// Event
 	EventRepository := repository.NewRepositoryEvent(db)
-	EventService := service.NewEventService(EventRepository)
+	EventService := service.NewEventService(EventRepository, CommentRepository, ParticipantRepository)
 
 	client := _graph.NewResolver(UserService, CommentService, ParticipantService, EventService)
 	srv := NewGraphQLServer(client)
