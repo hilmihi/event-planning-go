@@ -113,8 +113,9 @@ type Participant struct {
 }
 
 type ResponseLogin struct {
-	Code  int    `json:"code"`
-	Token string `json:"token"`
+	Code   int    `json:"code"`
+	Token  string `json:"token"`
+	IDUser int    `json:"id_user"`
 }
 
 type ResponseMessage struct {
