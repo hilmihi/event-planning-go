@@ -223,7 +223,13 @@ func (r *queryResolver) Events(ctx context.Context) ([]*model.Event, error) {
 }
 
 func (r *queryResolver) EventsByID(ctx context.Context, id *int) (*model.EventDetail, error) {
-	panic(fmt.Errorf("not implemented"))
+	responseData, err := r.eventService.ServiceEventGet(*id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &responseData, nil
 }
 
 func (r *queryResolver) Category(ctx context.Context) ([]*model.Category, error) {

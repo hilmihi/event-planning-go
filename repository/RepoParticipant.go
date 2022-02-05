@@ -24,8 +24,8 @@ func (r *Repository_Participant) GetParticipant(id_event int) ([]entities.Partic
 	var participants []entities.Participant
 	results, err := r.db.Query(`select p.id, p.id_user, p.id_event, u.name, u.email, u.photo
 								from participant p
-								join users on u.id = p.id_user
-								where deleted_at is null order by created_at asc`)
+								join users u on u.id = p.id_user AND u.deleted_at is null
+								where p.deleted_at is null order by p.created_at asc`)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err

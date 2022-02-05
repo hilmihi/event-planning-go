@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"sirclo/api/entities"
 	"sirclo/api/graph/model"
 	"sirclo/api/repository"
@@ -15,11 +16,13 @@ type ServiceEvent interface {
 }
 
 type serviceEvent struct {
-	repo repository.RepositoryEvent
+	repo            repository.RepositoryEvent
+	repoComment     repository.RepositoryComment
+	repoParticipant repository.RepositoryParticipant
 }
 
-func NewEventService(repo repository.RepositoryEvent) *serviceEvent {
-	return &serviceEvent{repo: repo}
+func NewEventService(repo repository.RepositoryEvent, repoComment repository.RepositoryComment, repoParticipant repository.RepositoryParticipant) *serviceEvent {
+	return &serviceEvent{repo: repo, repoComment: repoComment, repoParticipant: repoParticipant}
 }
 
 // get all event
@@ -35,6 +38,19 @@ func (se *serviceEvent) ServiceEventsGet() ([]entities.Event, error) {
 func (se *serviceEvent) ServiceEventGet(id int) (model.EventDetail, error) {
 	event, err := se.repo.GetEvent(id)
 	if err != nil {
+		fmt.Println("ServiceEventGet-GetEvent: ", err)
+		return model.EventDetail{}, err
+	}
+
+	comments, err := se.repoComment.GetComments(id)
+	if err != nil {
+		fmt.Println("ServiceEventGet-GetComments: ", err)
+		return model.EventDetail{}, err
+	}
+
+	participants, err := se.repoParticipant.GetParticipant(id)
+	if err != nil {
+		fmt.Println("ServiceEventGet-GetParticipant: ", err)
 		return model.EventDetail{}, err
 	}
 
@@ -48,8 +64,33 @@ func (se *serviceEvent) ServiceEventGet(id int) (model.EventDetail, error) {
 		Location:   event.Location,
 		Details:    event.Details,
 		Photo:      &event.Photo,
-		// Comments: ,
-		// Participant: ,
+	}
+
+	for _, val := range comments {
+		comment := model.Comment{
+			ID:      val.Id,
+			IDEvent: val.Id_event,
+			IDUser:  val.Id_user,
+			Comment: &val.Comment,
+			Name:    &val.Name,
+			Email:   &val.Email,
+			Photo:   &val.Photo,
+		}
+
+		output.Comments = append(output.Comments, &comment)
+	}
+
+	for _, val := range participants {
+		participant := model.Participant{
+			ID:      val.Id,
+			IDEvent: val.Id_event,
+			IDUser:  val.Id_user,
+			Name:    &val.Name,
+			Email:   &val.Email,
+			Photo:   &val.Photo,
+		}
+
+		output.Participant = append(output.Participant, &participant)
 	}
 
 	return output, nil
