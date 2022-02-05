@@ -17,6 +17,7 @@ type ResponseMessage {
 type ResponseLogin {
   code: Int!
   token: String!
+  id_user: Int!
 }
 
 type User {

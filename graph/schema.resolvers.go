@@ -171,13 +171,13 @@ func (r *mutationResolver) DeleteParticipantByID(ctx context.Context, id int) (*
 }
 
 func (r *queryResolver) Login(ctx context.Context, email string, password string) (*model.ResponseLogin, error) {
-	token, err := r.userService.ServiceUserLoginGraph(email, password)
+	userId, token, err := r.userService.ServiceUserLoginGraph(email, password)
 	if err != nil {
 		fmt.Println("login: ", err)
 		return &model.ResponseLogin{Code: 400, Token: "Failed Login!"}, err
 	}
 
-	return &model.ResponseLogin{Code: 200, Token: token}, err
+	return &model.ResponseLogin{Code: 200, Token: token, IDUser: userId}, err
 }
 
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {

@@ -11,7 +11,7 @@ import (
 
 type ServiceUser interface {
 	ServiceUserLogin(input helper.RequestUserLogin) (entities.User, error)
-	ServiceUserLoginGraph(string, string) (string, error)
+	ServiceUserLoginGraph(string, string) (int, string, error)
 	ServiceUsersGet() ([]entities.User, error)
 	ServiceUserGet(id int) (model.User, error)
 	ServiceUserCreate(input entities.User) (model.User, error)
@@ -49,25 +49,25 @@ func (su *serviceUser) ServiceUserLogin(input helper.RequestUserLogin) (entities
 	return user, nil
 }
 
-func (su *serviceUser) ServiceUserLoginGraph(email, password string) (string, error) {
+func (su *serviceUser) ServiceUserLoginGraph(email, password string) (int, string, error) {
 	var user entities.User
 	user, err := su.repository1.FindByEmail(email)
 	if err != nil {
-		return "", err
+		return 0, "", err
 	}
 
 	match, err := helper.CheckPasswordHash(password, user.Password)
 	if err != nil {
-		return "", err
+		return 0, "", err
 	}
 
 	if !match {
-		return "", fmt.Errorf("Email atau Password Anda Salah!")
+		return 0, "", fmt.Errorf("Email atau Password Anda Salah!")
 	}
 
 	token, err := addmiddleware.GenerateToken(user.Id)
 
-	return token, nil
+	return user.Id, token, nil
 }
 
 func (su *serviceUser) ServiceUsersGet() ([]entities.User, error) {
