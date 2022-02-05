@@ -207,7 +207,19 @@ func (r *queryResolver) UsersByID(ctx context.Context, id *int) (*model.User, er
 }
 
 func (r *queryResolver) Events(ctx context.Context) ([]*model.Event, error) {
-	panic(fmt.Errorf("not implemented"))
+	responseData, err := r.eventService.ServiceEventsGet()
+
+	if err != nil {
+		return nil, err
+	}
+
+	eventResponseData := []*model.Event{}
+
+	for _, v := range responseData {
+		eventResponseData = append(eventResponseData, &model.Event{ID: v.Id, IDUser: &v.Id_user, IDCategory: v.Id_category, Title: v.Title, StartDate: v.Start_date, EndDate: v.End_date, Location: v.Location, Details: v.Details, Photo: &v.Photo})
+	}
+
+	return eventResponseData, nil
 }
 
 func (r *queryResolver) EventsByID(ctx context.Context, id *int) (*model.EventDetail, error) {
