@@ -112,7 +112,18 @@ func (r *mutationResolver) UpdateEvent(ctx context.Context, input model.NewEvent
 }
 
 func (r *mutationResolver) DeleteEventByID(ctx context.Context, id int) (*model.ResponseMessage, error) {
-	panic(fmt.Errorf("not implemented"))
+	auth_user := ctx.Value("EchoContextKey")
+	if auth_user == nil {
+		return &model.ResponseMessage{Code: 400, Message: "Not Authorized"}, fmt.Errorf("Not Authorized")
+	}
+	event, err := r.eventService.ServiceEventDelete(id)
+	if auth_user.(int) != event.Id_user {
+		return &model.ResponseMessage{Code: 400, Message: "Not Allowed"}, fmt.Errorf("Not Authorized")
+	}
+	if err != nil {
+		return &model.ResponseMessage{Code: 500, Message: "Internal Server Error"}, err
+	}
+	return &model.ResponseMessage{Code: 200, Message: "Succesfull Operation"}, err
 }
 
 func (r *mutationResolver) CreateComment(ctx context.Context, input model.NewComment) (*model.Comment, error) {
