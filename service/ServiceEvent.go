@@ -10,7 +10,7 @@ type ServiceEvent interface {
 	ServiceEventsGet() ([]entities.Event, error)
 	ServiceEventGet(id int) (model.EventDetail, error)
 	ServiceEventCreate(input entities.Event) (model.Event, error)
-	ServiceEventUpdate(id int, input model.NewEvent) error
+	ServiceEventUpdate(id int, input model.NewEvent) (entities.Event, error)
 	ServiceEventDelete(id int) (entities.Event, error)
 }
 
@@ -64,7 +64,7 @@ func (se *serviceEvent) ServiceEventCreate(input entities.Event) (model.Event, e
 
 	output := model.Event{
 		ID:         createEvent.Id,
-		IDUser:     createEvent.Id_user,
+		IDUser:     &createEvent.Id_user,
 		IDCategory: createEvent.Id_category,
 		Title:      createEvent.Title,
 		StartDate:  createEvent.Start_date,
@@ -77,13 +77,12 @@ func (se *serviceEvent) ServiceEventCreate(input entities.Event) (model.Event, e
 }
 
 // update event
-func (se *serviceEvent) ServiceEventUpdate(id int, input model.NewEvent) error {
+func (se *serviceEvent) ServiceEventUpdate(id int, input model.NewEvent) (entities.Event, error) {
 	event, err := se.repo.GetEvent(id)
 	if err != nil {
-		return err
+		return entities.Event{}, err
 	}
 
-	event.Id_user = input.IDUser
 	event.Id_category = input.IDCategory
 	event.Title = input.Title
 	event.Start_date = input.StartDate
@@ -94,11 +93,11 @@ func (se *serviceEvent) ServiceEventUpdate(id int, input model.NewEvent) error {
 		event.Photo = *input.Photo
 	}
 
-	_, err = se.repo.UpdateEvent(event)
-	if err != nil {
-		return err
+	updateEvent, errUpdate := se.repo.UpdateEvent(event)
+	if errUpdate != nil {
+		return updateEvent, err
 	}
-	return nil
+	return updateEvent, nil
 }
 
 // delete event

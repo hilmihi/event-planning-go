@@ -44,7 +44,7 @@ type Category{
 
 type Event{
   id: Int!
-  id_user: Int!
+  id_user: Int
   id_category: Int!
   title: String!
   start_date: String!
@@ -129,7 +129,7 @@ input NewUser {
 }
 
 input NewEvent{
-  id_user: Int!
+  id_user: Int
   id_category: Int!
   title: String!
   start_date: String!

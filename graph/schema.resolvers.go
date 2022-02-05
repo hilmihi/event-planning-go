@@ -74,7 +74,7 @@ func (r *mutationResolver) CreateEvent(ctx context.Context, input model.NewEvent
 	}
 
 	new := &entities.Event{
-		Id_user:     input.IDUser,
+		Id_user:     auth_user.(int),
 		Id_category: input.IDCategory,
 		Title:       input.Title,
 		Start_date:  input.StartDate,
@@ -97,19 +97,17 @@ func (r *mutationResolver) CreateEvent(ctx context.Context, input model.NewEvent
 func (r *mutationResolver) UpdateEvent(ctx context.Context, input model.NewEvent, id int) (*model.ResponseMessage, error) {
 	auth_user := ctx.Value("EchoContextKey")
 	if auth_user == nil {
-		fmt.Println("error sini")
 		return &model.ResponseMessage{Code: 400, Message: "Not Authorized"}, fmt.Errorf("Not Authorized")
 	}
 
-	if auth_user.(int) != input.IDUser {
-		fmt.Println("oh sini deng")
+	event, err := r.eventService.ServiceEventUpdate(id, input)
+	if auth_user.(int) != event.Id_user {
 		return &model.ResponseMessage{Code: 400, Message: "Not Allowed"}, fmt.Errorf("Not Authorized")
 	}
-
-	err := r.eventService.ServiceEventUpdate(id, input)
 	if err != nil {
 		return &model.ResponseMessage{Code: 500, Message: "Internal Server Error"}, err
 	}
+
 	return &model.ResponseMessage{Code: 200, Message: "Succesfull Operation"}, err
 }
 
