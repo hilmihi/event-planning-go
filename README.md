@@ -22,6 +22,9 @@ This project structure is built using
 ### Features
 
 - USERS CRUD
+- EVENTS CRUD
+- COMMENTS CR
+- CATEGORY R
 
 ### Folder Structure
 
