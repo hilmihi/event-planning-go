@@ -173,8 +173,7 @@ func (r *mutationResolver) DeleteParticipantByID(ctx context.Context, id int) (*
 func (r *queryResolver) Login(ctx context.Context, email string, password string) (*model.ResponseLogin, error) {
 	userId, token, err := r.userService.ServiceUserLoginGraph(email, password)
 	if err != nil {
-		fmt.Println("login: ", err)
-		return &model.ResponseLogin{Code: 400, Token: "Failed Login!"}, err
+		return &model.ResponseLogin{Code: 400, Token: "", IDUser: 0}, fmt.Errorf("Failed Login!")
 	}
 
 	return &model.ResponseLogin{Code: 200, Token: token, IDUser: userId}, err
