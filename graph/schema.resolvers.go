@@ -232,7 +232,19 @@ func (r *queryResolver) EventsByID(ctx context.Context, id *int) (*model.EventDe
 }
 
 func (r *queryResolver) Category(ctx context.Context) ([]*model.Category, error) {
-	panic(fmt.Errorf("not implemented"))
+	responseData, err := r.categoryService.ServiceCategoriesGet()
+
+	if err != nil {
+		return nil, err
+	}
+
+	categoryResponseData := []*model.Category{}
+
+	for _, v := range responseData {
+		categoryResponseData = append(categoryResponseData, &model.Category{ID: v.Id, Description: v.Description})
+	}
+
+	return categoryResponseData, nil
 }
 
 func (r *queryResolver) Comments(ctx context.Context, idEvent int) ([]*model.Comment, error) {
