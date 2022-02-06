@@ -232,6 +232,11 @@ func (r *queryResolver) EventsByID(ctx context.Context, id *int) (*model.EventDe
 }
 
 func (r *queryResolver) Category(ctx context.Context) ([]*model.Category, error) {
+	auth_user := ctx.Value("EchoContextKey")
+	if auth_user == nil {
+		return nil, fmt.Errorf("Not Authorized")
+	}
+
 	responseData, err := r.categoryService.ServiceCategoriesGet()
 
 	if err != nil {
