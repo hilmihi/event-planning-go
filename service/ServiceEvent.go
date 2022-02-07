@@ -9,6 +9,7 @@ import (
 
 type ServiceEvent interface {
 	ServiceEventsGet(int, int) ([]entities.Event, error)
+	ServiceEventsPaginationGet(int, int) (model.Pagination, error)
 	ServiceSearctEventsGet(string) ([]entities.Event, error)
 	ServiceMyEventsGet(int) ([]entities.Event, error)
 	ServiceEventsHistoryGet(int) ([]entities.Event, error)
@@ -35,6 +36,28 @@ func (se *serviceEvent) ServiceEventsGet(limit, offset int) ([]entities.Event, e
 		return events, err
 	}
 	return events, nil
+}
+
+func (se *serviceEvent) ServiceEventsPaginationGet(limit, offset int) (model.Pagination, error) {
+	events, err := se.repo.GetEvents(limit, offset)
+	if err != nil {
+		return model.Pagination{}, err
+	}
+
+	total_page := (len(events) / limit) + 1
+
+	eventResponseData := []*model.Event{}
+
+	for _, v := range events {
+		eventResponseData = append(eventResponseData, &model.Event{ID: v.Id, IDUser: &v.Id_user, IDCategory: v.Id_category, Title: v.Title, StartDate: v.Start_date, EndDate: v.End_date, Location: v.Location, Details: v.Details, Photo: &v.Photo})
+	}
+
+	pagination := model.Pagination{
+		TotalPage: total_page,
+		Data:      eventResponseData,
+	}
+
+	return pagination, nil
 }
 
 func (se *serviceEvent) ServiceSearctEventsGet(title string) ([]entities.Event, error) {

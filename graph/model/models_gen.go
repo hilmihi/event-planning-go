@@ -100,6 +100,11 @@ type NewUser struct {
 	DeletedAt   *string `json:"deleted_at"`
 }
 
+type Pagination struct {
+	TotalPage int      `json:"total_page"`
+	Data      []*Event `json:"data"`
+}
+
 type Participant struct {
 	ID        int     `json:"id"`
 	IDEvent   int     `json:"id_event"`

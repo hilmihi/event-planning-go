@@ -110,6 +110,11 @@ type ComplexityRoot struct {
 		UpdateUser            func(childComplexity int, input model.NewUser, id int) int
 	}
 
+	Pagination struct {
+		Data      func(childComplexity int) int
+		TotalPage func(childComplexity int) int
+	}
+
 	Participant struct {
 		CreatedAt func(childComplexity int) int
 		DeletedAt func(childComplexity int) int
@@ -123,16 +128,17 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Category     func(childComplexity int) int
-		Comments     func(childComplexity int, idEvent int) int
-		EventHistory func(childComplexity int, idUser int) int
-		EventSearch  func(childComplexity int, title string) int
-		Events       func(childComplexity int, limit int, offset int) int
-		EventsByID   func(childComplexity int, id int) int
-		Login        func(childComplexity int, email string, password string) int
-		MyEvent      func(childComplexity int, idUser int) int
-		Users        func(childComplexity int) int
-		UsersByID    func(childComplexity int, id *int) int
+		Category         func(childComplexity int) int
+		Comments         func(childComplexity int, idEvent int) int
+		EventHistory     func(childComplexity int, idUser int) int
+		EventSearch      func(childComplexity int, title string) int
+		Events           func(childComplexity int, limit int, offset int) int
+		EventsByID       func(childComplexity int, id int) int
+		EventsPagination func(childComplexity int, limit int, offset int) int
+		Login            func(childComplexity int, email string, password string) int
+		MyEvent          func(childComplexity int, idUser int) int
+		Users            func(childComplexity int) int
+		UsersByID        func(childComplexity int, id *int) int
 	}
 
 	ResponseLogin struct {
@@ -180,6 +186,7 @@ type QueryResolver interface {
 	Users(ctx context.Context) ([]*model.User, error)
 	UsersByID(ctx context.Context, id *int) (*model.User, error)
 	Events(ctx context.Context, limit int, offset int) ([]*model.Event, error)
+	EventsPagination(ctx context.Context, limit int, offset int) (*model.Pagination, error)
 	EventsByID(ctx context.Context, id int) (*model.EventDetail, error)
 	EventSearch(ctx context.Context, title string) ([]*model.Event, error)
 	MyEvent(ctx context.Context, idUser int) ([]*model.Event, error)
@@ -622,6 +629,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.UpdateUser(childComplexity, args["input"].(model.NewUser), args["id"].(int)), true
 
+	case "Pagination.data":
+		if e.complexity.Pagination.Data == nil {
+			break
+		}
+
+		return e.complexity.Pagination.Data(childComplexity), true
+
+	case "Pagination.total_page":
+		if e.complexity.Pagination.TotalPage == nil {
+			break
+		}
+
+		return e.complexity.Pagination.TotalPage(childComplexity), true
+
 	case "Participant.created_at":
 		if e.complexity.Participant.CreatedAt == nil {
 			break
@@ -751,6 +772,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.EventsByID(childComplexity, args["id"].(int)), true
+
+	case "Query.eventsPagination":
+		if e.complexity.Query.EventsPagination == nil {
+			break
+		}
+
+		args, err := ec.field_Query_eventsPagination_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.EventsPagination(childComplexity, args["limit"].(int), args["offset"].(int)), true
 
 	case "Query.login":
 		if e.complexity.Query.Login == nil {
@@ -1080,6 +1113,11 @@ type Participant{
     deleted_at: String
 }
 
+type Pagination{
+    total_page: Int!
+    data: [Event!]!
+}
+
 type Query {
   login(email: String!, password: String!): ResponseLogin!
   
@@ -1087,6 +1125,7 @@ type Query {
   usersById(id:Int): User!
   
   events(limit: Int!, offset: Int!): [Event!]!
+  eventsPagination(limit: Int!, offset: Int!): Pagination!
   eventsById(id: Int!): EventDetail!
   eventSearch(title: String!): [Event!]!
   myEvent(id_user: Int!): [Event!]!
@@ -1431,6 +1470,30 @@ func (ec *executionContext) field_Query_eventsById_args(ctx context.Context, raw
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_eventsPagination_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["limit"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["limit"] = arg0
+	var arg1 int
+	if tmp, ok := rawArgs["offset"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
+		arg1, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["offset"] = arg1
 	return args, nil
 }
 
@@ -3366,6 +3429,76 @@ func (ec *executionContext) _Mutation_deleteParticipantByID(ctx context.Context,
 	return ec.marshalOResponseMessage2ᚖsircloᚋapiᚋgraphᚋmodelᚐResponseMessage(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Pagination_total_page(ctx context.Context, field graphql.CollectedField, obj *model.Pagination) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Pagination",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalPage, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Pagination_data(ctx context.Context, field graphql.CollectedField, obj *model.Pagination) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Pagination",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Data, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Event)
+	fc.Result = res
+	return ec.marshalNEvent2ᚕᚖsircloᚋapiᚋgraphᚋmodelᚐEventᚄ(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Participant_id(ctx context.Context, field graphql.CollectedField, obj *model.Participant) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -3822,6 +3955,48 @@ func (ec *executionContext) _Query_events(ctx context.Context, field graphql.Col
 	res := resTmp.([]*model.Event)
 	fc.Result = res
 	return ec.marshalNEvent2ᚕᚖsircloᚋapiᚋgraphᚋmodelᚐEventᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_eventsPagination(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_eventsPagination_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().EventsPagination(rctx, args["limit"].(int), args["offset"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Pagination)
+	fc.Result = res
+	return ec.marshalNPagination2ᚖsircloᚋapiᚋgraphᚋmodelᚐPagination(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_eventsById(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -6710,6 +6885,47 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 	return out
 }
 
+var paginationImplementors = []string{"Pagination"}
+
+func (ec *executionContext) _Pagination(ctx context.Context, sel ast.SelectionSet, obj *model.Pagination) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, paginationImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Pagination")
+		case "total_page":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Pagination_total_page(ctx, field, obj)
+			}
+
+			out.Values[i] = innerFunc(ctx)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "data":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Pagination_data(ctx, field, obj)
+			}
+
+			out.Values[i] = innerFunc(ctx)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var participantImplementors = []string{"Participant"}
 
 func (ec *executionContext) _Participant(ctx context.Context, sel ast.SelectionSet, obj *model.Participant) graphql.Marshaler {
@@ -6901,6 +7117,29 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_events(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "eventsPagination":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_eventsPagination(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -7919,6 +8158,20 @@ func (ec *executionContext) unmarshalNNewParticipant2sircloᚋapiᚋgraphᚋmode
 func (ec *executionContext) unmarshalNNewUser2sircloᚋapiᚋgraphᚋmodelᚐNewUser(ctx context.Context, v interface{}) (model.NewUser, error) {
 	res, err := ec.unmarshalInputNewUser(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNPagination2sircloᚋapiᚋgraphᚋmodelᚐPagination(ctx context.Context, sel ast.SelectionSet, v model.Pagination) graphql.Marshaler {
+	return ec._Pagination(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNPagination2ᚖsircloᚋapiᚋgraphᚋmodelᚐPagination(ctx context.Context, sel ast.SelectionSet, v *model.Pagination) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Pagination(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNResponseLogin2sircloᚋapiᚋgraphᚋmodelᚐResponseLogin(ctx context.Context, sel ast.SelectionSet, v model.ResponseLogin) graphql.Marshaler {

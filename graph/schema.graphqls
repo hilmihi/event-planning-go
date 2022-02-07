@@ -100,6 +100,11 @@ type Participant{
     deleted_at: String
 }
 
+type Pagination{
+    total_page: Int!
+    data: [Event!]!
+}
+
 type Query {
   login(email: String!, password: String!): ResponseLogin!
   
@@ -107,6 +112,7 @@ type Query {
   usersById(id:Int): User!
   
   events(limit: Int!, offset: Int!): [Event!]!
+  eventsPagination(limit: Int!, offset: Int!): Pagination!
   eventsById(id: Int!): EventDetail!
   eventSearch(title: String!): [Event!]!
   myEvent(id_user: Int!): [Event!]!
