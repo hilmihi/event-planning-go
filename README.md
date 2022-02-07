@@ -12,7 +12,6 @@ Building the project with layered architecture, and clean code approach for the 
 
 This project structure is built using
 
-- [Swagger](https://app.swaggerhub.com/apis-docs/HamzahAA15/TakTuku-Project/1.0.0#/Products/get_products_myproduct)
 - [Golang]
 - [Mysql]
 - [Labstack/Echo]
@@ -23,17 +22,21 @@ This project structure is built using
 ### Features
 
 - USERS CRUD
+- EVENTS CRUD
+- COMMENTS CR
+- CATEGORY R
 
 ### Folder Structure
 
 ```
+├── app                             # Main.go
 ├── addMiddleware/                  # Create middleware
 ├── config/                         # Configuration to connect to database
-├── controller/                     # Create controller for user, product, cart, and order
-├── entities/                       # Create entities for user, product, cart, and order
-├── helper/                         # Create request, response, and helper for user, product, cart, and order
-├── repository/                     # Get all required data from database for user, product, cart, and order
-├── service/                        # Create service for handle the data from repository of user, product, cart, and order
+├── entities/                       # Create entities for category, comment, event, participant, and user
+├── graph/                          # Create schema and resolver for category, comment, event, participant, and user
+├── helper/                         # Create request, response, and helper for category, comment, event, participant, and user
+├── repository/                     # Get all required data from database for category, comment, event, participant, and user
+├── service/                        # Create service for handle the data from repository of category, comment, event, participant, and user
 
 ```
 

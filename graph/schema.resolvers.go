@@ -171,13 +171,12 @@ func (r *mutationResolver) DeleteParticipantByID(ctx context.Context, id int) (*
 }
 
 func (r *queryResolver) Login(ctx context.Context, email string, password string) (*model.ResponseLogin, error) {
-	token, err := r.userService.ServiceUserLoginGraph(email, password)
+	userId, token, err := r.userService.ServiceUserLoginGraph(email, password)
 	if err != nil {
-		fmt.Println("login: ", err)
-		return &model.ResponseLogin{Code: 400, Token: "Failed Login!"}, err
+		return &model.ResponseLogin{Code: 400, Token: "", IDUser: 0}, fmt.Errorf("Failed Login!")
 	}
 
-	return &model.ResponseLogin{Code: 200, Token: token}, err
+	return &model.ResponseLogin{Code: 200, Token: token, IDUser: userId}, err
 }
 
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
@@ -245,7 +244,24 @@ func (r *queryResolver) EventHistory(ctx context.Context, idUser int) ([]*model.
 }
 
 func (r *queryResolver) Category(ctx context.Context) ([]*model.Category, error) {
-	panic(fmt.Errorf("not implemented"))
+	auth_user := ctx.Value("EchoContextKey")
+	if auth_user == nil {
+		return nil, fmt.Errorf("Not Authorized")
+	}
+
+	responseData, err := r.categoryService.ServiceCategoriesGet()
+
+	if err != nil {
+		return nil, err
+	}
+
+	categoryResponseData := []*model.Category{}
+
+	for _, v := range responseData {
+		categoryResponseData = append(categoryResponseData, &model.Category{ID: v.Id, Description: v.Description})
+	}
+
+	return categoryResponseData, nil
 }
 
 func (r *queryResolver) Comments(ctx context.Context, idEvent int) ([]*model.Comment, error) {
