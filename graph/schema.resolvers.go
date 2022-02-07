@@ -225,11 +225,6 @@ func (r *queryResolver) Events(ctx context.Context, limit int, offset int) ([]*m
 }
 
 func (r *queryResolver) EventsByID(ctx context.Context, id int) (*model.EventDetail, error) {
-	_, bol := ctx.Value("EchoContextKey").(int)
-	if bol == false {
-		return &model.EventDetail{}, fmt.Errorf("Not Authorized")
-	}
-
 	responseData, err := r.eventService.ServiceEventGet(id)
 
 	if err != nil {
@@ -240,11 +235,6 @@ func (r *queryResolver) EventsByID(ctx context.Context, id int) (*model.EventDet
 }
 
 func (r *queryResolver) EventSearch(ctx context.Context, title string) ([]*model.Event, error) {
-	_, bol := ctx.Value("EchoContextKey").(int)
-	if bol == false {
-		return nil, fmt.Errorf("Not Authorized")
-	}
-
 	responseData, err := r.eventService.ServiceSearctEventsGet(title)
 	if err != nil {
 		return nil, err
@@ -305,11 +295,6 @@ func (r *queryResolver) EventHistory(ctx context.Context, idUser int) ([]*model.
 }
 
 func (r *queryResolver) Category(ctx context.Context) ([]*model.Category, error) {
-	_, bol := ctx.Value("EchoContextKey").(int)
-	if bol == false {
-		return nil, fmt.Errorf("Not Authorized")
-	}
-
 	responseData, err := r.categoryService.ServiceCategoriesGet()
 
 	if err != nil {
