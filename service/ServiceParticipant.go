@@ -26,6 +26,18 @@ func (s *serviceParticipant) ServiceParticipantCreate(input model.NewParticipant
 		Id_user:  input.IDUser,
 	}
 
+	// cek jika participant sudah pernah join event
+	existingParticipant, errGet := s.repository1.GetParticipants(input.IDEvent)
+	if errGet != nil {
+		return model.Participant{}, errGet
+	}
+
+	for _, v := range existingParticipant {
+		if v == participant {
+			return model.Participant{}, fmt.Errorf("Failed to Join, You Already Joined This Event!")
+		}
+	}
+
 	CreateParticipant, err := s.repository1.CreateParticipant(participant)
 	if err != nil {
 		fmt.Println(err)
