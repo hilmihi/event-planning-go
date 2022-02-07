@@ -3,10 +3,14 @@ package repository
 import (
 	"database/sql"
 	"sirclo/api/entities"
+	"strings"
 )
 
 type RepositoryEvent interface {
-	GetEvents() ([]entities.Event, error)
+	GetEvents(int, int) ([]entities.Event, error)
+	SearchEvents(string) ([]entities.Event, error)
+	GetMyEvents(int) ([]entities.Event, error)
+	GetEventsHistory(int) ([]entities.Event, error)
 	CreateEvent(event entities.Event) (entities.Event, error)
 	GetEvent(id int) (entities.Event, error)
 	UpdateEvent(event entities.Event) (entities.Event, error)
@@ -22,12 +26,88 @@ func NewRepositoryEvent(db *sql.DB) *Repository_Event {
 }
 
 // get events
-func (re *Repository_Event) GetEvents() ([]entities.Event, error) {
+func (re *Repository_Event) GetEvents(limit, offset int) ([]entities.Event, error) {
 	var events []entities.Event
 	result, err := re.db.Query(`select e.id, e.id_user, e.id_category, e.title, e.start_date, e.end_date, e.location, e.details, e.photo, u.name
 								from event e 
 								join users u on u.id = e.id_user and u.deleted_at is null
-								WHERE e.deleted_at IS NULL`)
+								WHERE e.deleted_at IS NULL
+								LIMIT ?, ?`, offset, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	defer result.Close()
+
+	for result.Next() {
+		var event entities.Event
+		err = result.Scan(&event.Id, &event.Id_user, &event.Id_category, &event.Title, &event.Start_date, &event.End_date, &event.Location, &event.Details, &event.Photo, &event.HostedBy)
+		if err != nil {
+			return nil, err
+		}
+
+		events = append(events, event)
+	}
+	return events, nil
+}
+
+func (re *Repository_Event) SearchEvents(title string) ([]entities.Event, error) {
+	var events []entities.Event
+	result, err := re.db.Query(`select e.id, e.id_user, e.id_category, e.title, e.start_date, e.end_date, e.location, e.details, e.photo, u.name
+								from event e 
+								join users u on u.id = e.id_user and u.deleted_at is null
+								WHERE e.deleted_at IS NULL AND LOWER(e.title) LIKE ?`, "%"+strings.ToLower(title)+"%")
+	if err != nil {
+		return nil, err
+	}
+
+	defer result.Close()
+
+	for result.Next() {
+		var event entities.Event
+		err = result.Scan(&event.Id, &event.Id_user, &event.Id_category, &event.Title, &event.Start_date, &event.End_date, &event.Location, &event.Details, &event.Photo, &event.HostedBy)
+		if err != nil {
+			return nil, err
+		}
+
+		events = append(events, event)
+	}
+	return events, nil
+}
+
+// get my events
+func (re *Repository_Event) GetMyEvents(id_user int) ([]entities.Event, error) {
+	var events []entities.Event
+	result, err := re.db.Query(`select e.id, e.id_user, e.id_category, e.title, e.start_date, e.end_date, e.location, e.details, e.photo, u.name
+								from event e 
+								join users u on u.id = e.id_user and u.deleted_at is null
+								WHERE e.deleted_at IS NULL AND e.id_user = ?`, id_user)
+	if err != nil {
+		return nil, err
+	}
+
+	defer result.Close()
+
+	for result.Next() {
+		var event entities.Event
+		err = result.Scan(&event.Id, &event.Id_user, &event.Id_category, &event.Title, &event.Start_date, &event.End_date, &event.Location, &event.Details, &event.Photo, &event.HostedBy)
+		if err != nil {
+			return nil, err
+		}
+
+		events = append(events, event)
+	}
+	return events, nil
+}
+
+// get events history
+func (re *Repository_Event) GetEventsHistory(id_user int) ([]entities.Event, error) {
+	var events []entities.Event
+	result, err := re.db.Query(`select e.id, e.id_user, e.id_category, e.title, e.start_date, e.end_date, e.location, e.details, e.photo, u.name
+								from event e 
+								join users u on u.id = e.id_user and u.deleted_at is null
+								join participant p on p.id_event = e.id
+								WHERE e.deleted_at IS NULL AND p.id_user = ?`, id_user)
 	if err != nil {
 		return nil, err
 	}
