@@ -105,8 +105,11 @@ type Query {
   users: [User!]!
   usersById(id:Int): User!
   
-  events: [Event!]!
-  eventsById(id: Int): EventDetail!
+  events(limit: Int!, offset: Int!): [Event!]!
+  eventsById(id: Int!): EventDetail!
+  eventSearch(title: String!): [Event!]!
+  myEvent(id_user: Int!): [Event!]!
+  eventHistory(id_user: Int!): [Event!]!
   
   category: [Category!]!
   
