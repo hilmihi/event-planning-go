@@ -205,7 +205,7 @@ func (r *queryResolver) UsersByID(ctx context.Context, id *int) (*model.User, er
 	return &responseData, nil
 }
 
-func (r *queryResolver) Events(ctx context.Context) ([]*model.Event, error) {
+func (r *queryResolver) Events(ctx context.Context, limit int, offset int) ([]*model.Event, error) {
 	responseData, err := r.eventService.ServiceEventsGet()
 
 	if err != nil {
@@ -221,14 +221,26 @@ func (r *queryResolver) Events(ctx context.Context) ([]*model.Event, error) {
 	return eventResponseData, nil
 }
 
-func (r *queryResolver) EventsByID(ctx context.Context, id *int) (*model.EventDetail, error) {
-	responseData, err := r.eventService.ServiceEventGet(*id)
+func (r *queryResolver) EventsByID(ctx context.Context, id int) (*model.EventDetail, error) {
+	responseData, err := r.eventService.ServiceEventGet(id)
 
 	if err != nil {
 		return nil, err
 	}
 
 	return &responseData, nil
+}
+
+func (r *queryResolver) EventSearch(ctx context.Context, title string) ([]*model.Event, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) MyEvent(ctx context.Context, idUser int) ([]*model.Event, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) EventHistory(ctx context.Context, idUser int) ([]*model.Event, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 func (r *queryResolver) Category(ctx context.Context) ([]*model.Category, error) {
