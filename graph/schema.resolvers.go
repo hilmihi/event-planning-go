@@ -48,9 +48,9 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, input model.NewUser, 
 }
 
 func (r *mutationResolver) DeleteUserByID(ctx context.Context, id int) (*model.ResponseMessage, error) {
-	auth_user := ctx.Value("EchoContextKey").(int)
-	if auth_user == 0 {
-		return &model.ResponseMessage{Code: 400, Message: "Not Authorized"}, fmt.Errorf("Not Authorized")
+	auth_user, bol := ctx.Value("EchoContextKey").(int)
+	if bol == false {
+		return &model.ResponseMessage{}, fmt.Errorf("Not Authorized")
 	}
 
 	if id != auth_user {
@@ -67,14 +67,13 @@ func (r *mutationResolver) DeleteUserByID(ctx context.Context, id int) (*model.R
 }
 
 func (r *mutationResolver) CreateEvent(ctx context.Context, input model.NewEvent) (*model.Event, error) {
-	auth_user := ctx.Value("EchoContextKey")
-
-	if auth_user == nil {
+	auth_user, bol := ctx.Value("EchoContextKey").(int)
+	if bol == false {
 		return &model.Event{}, fmt.Errorf("Not Authorized")
 	}
 
 	new := &entities.Event{
-		Id_user:     auth_user.(int),
+		Id_user:     auth_user,
 		Id_category: input.IDCategory,
 		Title:       input.Title,
 		Start_date:  input.StartDate,
@@ -127,8 +126,8 @@ func (r *mutationResolver) DeleteEventByID(ctx context.Context, id int) (*model.
 }
 
 func (r *mutationResolver) CreateComment(ctx context.Context, input model.NewComment) (*model.Comment, error) {
-	auth_user := ctx.Value("EchoContextKey").(int)
-	if auth_user == 0 {
+	_, bol := ctx.Value("EchoContextKey").(int)
+	if bol == false {
 		return &model.Comment{}, fmt.Errorf("Not Authorized")
 	}
 
@@ -147,11 +146,10 @@ func (r *mutationResolver) DeleteCommentByID(ctx context.Context, id int) (*mode
 }
 
 func (r *mutationResolver) CreateParticipant(ctx context.Context, input model.NewParticipant) (*model.Participant, error) {
-	auth_user := ctx.Value("EchoContextKey").(int)
-	if auth_user == 0 {
+	_, bol := ctx.Value("EchoContextKey").(int)
+	if bol == false {
 		return &model.Participant{}, fmt.Errorf("Not Authorized")
 	}
-
 	resp, err := r.participantService.ServiceParticipantCreate(input)
 
 	if err != nil {
@@ -206,7 +204,12 @@ func (r *queryResolver) UsersByID(ctx context.Context, id *int) (*model.User, er
 }
 
 func (r *queryResolver) Events(ctx context.Context, limit int, offset int) ([]*model.Event, error) {
-	responseData, err := r.eventService.ServiceEventsGet()
+	_, bol := ctx.Value("EchoContextKey").(int)
+	if bol != true {
+		return nil, fmt.Errorf("Not Authorized")
+	}
+
+	responseData, err := r.eventService.ServiceEventsGet(limit, offset)
 
 	if err != nil {
 		return nil, err
@@ -232,23 +235,66 @@ func (r *queryResolver) EventsByID(ctx context.Context, id int) (*model.EventDet
 }
 
 func (r *queryResolver) EventSearch(ctx context.Context, title string) ([]*model.Event, error) {
-	panic(fmt.Errorf("not implemented"))
+	responseData, err := r.eventService.ServiceSearctEventsGet(title)
+	if err != nil {
+		return nil, err
+	}
+
+	eventResponseData := []*model.Event{}
+	for _, v := range responseData {
+		eventResponseData = append(eventResponseData, &model.Event{ID: v.Id, IDUser: &v.Id_user, IDCategory: v.Id_category, Title: v.Title, StartDate: v.Start_date, EndDate: v.End_date, Location: v.Location, Details: v.Details, Photo: &v.Photo})
+	}
+
+	return eventResponseData, nil
 }
 
 func (r *queryResolver) MyEvent(ctx context.Context, idUser int) ([]*model.Event, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-
-func (r *queryResolver) EventHistory(ctx context.Context, idUser int) ([]*model.Event, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-
-func (r *queryResolver) Category(ctx context.Context) ([]*model.Category, error) {
-	auth_user := ctx.Value("EchoContextKey")
-	if auth_user == nil {
+	auth_user, bol := ctx.Value("EchoContextKey").(int)
+	if bol == false {
 		return nil, fmt.Errorf("Not Authorized")
 	}
 
+	if auth_user != idUser {
+		return nil, fmt.Errorf("Not Authorized")
+	}
+
+	responseData, err := r.eventService.ServiceMyEventsGet(idUser)
+	if err != nil {
+		return nil, err
+	}
+
+	eventResponseData := []*model.Event{}
+	for _, v := range responseData {
+		eventResponseData = append(eventResponseData, &model.Event{ID: v.Id, IDUser: &v.Id_user, IDCategory: v.Id_category, Title: v.Title, StartDate: v.Start_date, EndDate: v.End_date, Location: v.Location, Details: v.Details, Photo: &v.Photo})
+	}
+
+	return eventResponseData, nil
+}
+
+func (r *queryResolver) EventHistory(ctx context.Context, idUser int) ([]*model.Event, error) {
+	auth_user, bol := ctx.Value("EchoContextKey").(int)
+	if bol == false {
+		return nil, fmt.Errorf("Not Authorized")
+	}
+
+	if auth_user != idUser {
+		return nil, fmt.Errorf("Not Authorized")
+	}
+
+	responseData, err := r.eventService.ServiceEventsHistoryGet(idUser)
+	if err != nil {
+		return nil, err
+	}
+
+	eventResponseData := []*model.Event{}
+	for _, v := range responseData {
+		eventResponseData = append(eventResponseData, &model.Event{ID: v.Id, IDUser: &v.Id_user, IDCategory: v.Id_category, Title: v.Title, StartDate: v.Start_date, EndDate: v.End_date, Location: v.Location, Details: v.Details, Photo: &v.Photo})
+	}
+
+	return eventResponseData, nil
+}
+
+func (r *queryResolver) Category(ctx context.Context) ([]*model.Category, error) {
 	responseData, err := r.categoryService.ServiceCategoriesGet()
 
 	if err != nil {
@@ -265,8 +311,8 @@ func (r *queryResolver) Category(ctx context.Context) ([]*model.Category, error)
 }
 
 func (r *queryResolver) Comments(ctx context.Context, idEvent int) ([]*model.Comment, error) {
-	auth_user := ctx.Value("EchoContextKey").(int)
-	if auth_user == 0 {
+	_, bol := ctx.Value("EchoContextKey").(int)
+	if bol == false {
 		return nil, fmt.Errorf("Not Authorized")
 	}
 

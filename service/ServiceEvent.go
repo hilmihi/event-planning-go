@@ -8,7 +8,10 @@ import (
 )
 
 type ServiceEvent interface {
-	ServiceEventsGet() ([]entities.Event, error)
+	ServiceEventsGet(int, int) ([]entities.Event, error)
+	ServiceSearctEventsGet(string) ([]entities.Event, error)
+	ServiceMyEventsGet(int) ([]entities.Event, error)
+	ServiceEventsHistoryGet(int) ([]entities.Event, error)
 	ServiceEventGet(id int) (model.EventDetail, error)
 	ServiceEventCreate(input entities.Event) (model.Event, error)
 	ServiceEventUpdate(id int, input model.NewEvent) (entities.Event, error)
@@ -26,8 +29,32 @@ func NewEventService(repo repository.RepositoryEvent, repoComment repository.Rep
 }
 
 // get all event
-func (se *serviceEvent) ServiceEventsGet() ([]entities.Event, error) {
-	events, err := se.repo.GetEvents()
+func (se *serviceEvent) ServiceEventsGet(limit, offset int) ([]entities.Event, error) {
+	events, err := se.repo.GetEvents(limit, offset)
+	if err != nil {
+		return events, err
+	}
+	return events, nil
+}
+
+func (se *serviceEvent) ServiceSearctEventsGet(title string) ([]entities.Event, error) {
+	events, err := se.repo.SearchEvents(title)
+	if err != nil {
+		return events, err
+	}
+	return events, nil
+}
+
+func (se *serviceEvent) ServiceMyEventsGet(id_user int) ([]entities.Event, error) {
+	events, err := se.repo.GetMyEvents(id_user)
+	if err != nil {
+		return events, err
+	}
+	return events, nil
+}
+
+func (se *serviceEvent) ServiceEventsHistoryGet(id_user int) ([]entities.Event, error) {
+	events, err := se.repo.GetMyEvents(id_user)
 	if err != nil {
 		return events, err
 	}
