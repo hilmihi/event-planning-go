@@ -7,6 +7,7 @@ import (
 )
 
 type RepositoryParticipant interface {
+	GetParticipants(int) ([]entities.Participant, error)
 	GetParticipant(int) ([]entities.Participant, error)
 	CreateParticipant(user entities.Participant) (entities.Participant, error)
 }
@@ -64,4 +65,29 @@ func (r *Repository_Participant) CreateParticipant(participant entities.Particip
 	}
 
 	return participant, nil
+}
+
+// get id_user participant
+func (r *Repository_Participant) GetParticipants(idEvent int) ([]entities.Participant, error) {
+	var participants []entities.Participant
+	results, err := r.db.Query(`select id_event, id_user from participant where deleted_at is null AND id_event =?`, idEvent)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	defer results.Close()
+
+	for results.Next() {
+		var participant entities.Participant
+
+		err = results.Scan(&participant.Id_event, &participant.Id_user)
+		if err != nil {
+			fmt.Println(err)
+			return nil, err
+		}
+
+		participants = append(participants, participant)
+	}
+	return participants, nil
 }
