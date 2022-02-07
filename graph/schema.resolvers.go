@@ -204,11 +204,6 @@ func (r *queryResolver) UsersByID(ctx context.Context, id *int) (*model.User, er
 }
 
 func (r *queryResolver) Events(ctx context.Context, limit int, offset int) ([]*model.Event, error) {
-	_, bol := ctx.Value("EchoContextKey").(int)
-	if bol != true {
-		return nil, fmt.Errorf("Not Authorized")
-	}
-
 	responseData, err := r.eventService.ServiceEventsGet(limit, offset)
 
 	if err != nil {
@@ -222,6 +217,16 @@ func (r *queryResolver) Events(ctx context.Context, limit int, offset int) ([]*m
 	}
 
 	return eventResponseData, nil
+}
+
+func (r *queryResolver) EventsPagination(ctx context.Context, limit int, offset int) (*model.Pagination, error) {
+	responseData, err := r.eventService.ServiceEventsPaginationGet(limit, offset)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &responseData, nil
 }
 
 func (r *queryResolver) EventsByID(ctx context.Context, id int) (*model.EventDetail, error) {
