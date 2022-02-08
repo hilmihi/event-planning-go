@@ -39,6 +39,7 @@ func (se *serviceEvent) ServiceEventsGet(limit, offset int) ([]entities.Event, e
 	return events, nil
 }
 
+// get events by category
 func (se *serviceEvent) ServiceEventsByCategoryGet(limit, offset, id_category int) ([]entities.Event, error) {
 	events, err := se.repo.GetEventsByCategory(limit, offset, id_category)
 	if err != nil {
@@ -47,6 +48,7 @@ func (se *serviceEvent) ServiceEventsByCategoryGet(limit, offset, id_category in
 	return events, nil
 }
 
+// pagination
 func (se *serviceEvent) ServiceEventsPaginationGet(limit, offset int) (model.Pagination, error) {
 	events, err := se.repo.GetEvents(limit, offset)
 	if err != nil {
@@ -69,6 +71,7 @@ func (se *serviceEvent) ServiceEventsPaginationGet(limit, offset int) (model.Pag
 	return pagination, nil
 }
 
+// search event by title
 func (se *serviceEvent) ServiceSearctEventsGet(title string) ([]entities.Event, error) {
 	events, err := se.repo.SearchEvents(title)
 	if err != nil {
@@ -77,6 +80,7 @@ func (se *serviceEvent) ServiceSearctEventsGet(title string) ([]entities.Event, 
 	return events, nil
 }
 
+// get my event
 func (se *serviceEvent) ServiceMyEventsGet(id_user int) ([]entities.Event, error) {
 	events, err := se.repo.GetMyEvents(id_user)
 	if err != nil {
@@ -85,6 +89,7 @@ func (se *serviceEvent) ServiceMyEventsGet(id_user int) ([]entities.Event, error
 	return events, nil
 }
 
+// get history event
 func (se *serviceEvent) ServiceEventsHistoryGet(id_user int) ([]entities.Event, error) {
 	events, err := se.repo.GetMyEvents(id_user)
 	if err != nil {
