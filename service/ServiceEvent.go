@@ -9,6 +9,7 @@ import (
 
 type ServiceEvent interface {
 	ServiceEventsGet(int, int) ([]entities.Event, error)
+	ServiceEventsByCategoryGet(int, int, int) ([]entities.Event, error)
 	ServiceEventsPaginationGet(int, int) (model.Pagination, error)
 	ServiceSearctEventsGet(string) ([]entities.Event, error)
 	ServiceMyEventsGet(int) ([]entities.Event, error)
@@ -32,6 +33,14 @@ func NewEventService(repo repository.RepositoryEvent, repoComment repository.Rep
 // get all event
 func (se *serviceEvent) ServiceEventsGet(limit, offset int) ([]entities.Event, error) {
 	events, err := se.repo.GetEvents(limit, offset)
+	if err != nil {
+		return events, err
+	}
+	return events, nil
+}
+
+func (se *serviceEvent) ServiceEventsByCategoryGet(limit, offset, id_category int) ([]entities.Event, error) {
+	events, err := se.repo.GetEventsByCategory(limit, offset, id_category)
 	if err != nil {
 		return events, err
 	}

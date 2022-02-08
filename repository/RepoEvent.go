@@ -8,6 +8,7 @@ import (
 
 type RepositoryEvent interface {
 	GetEvents(int, int) ([]entities.Event, error)
+	GetEventsByCategory(int, int, int) ([]entities.Event, error)
 	SearchEvents(string) ([]entities.Event, error)
 	GetMyEvents(int) ([]entities.Event, error)
 	GetEventsHistory(int) ([]entities.Event, error)
@@ -33,6 +34,31 @@ func (re *Repository_Event) GetEvents(limit, offset int) ([]entities.Event, erro
 								join users u on u.id = e.id_user and u.deleted_at is null
 								WHERE e.deleted_at IS NULL
 								LIMIT ?, ?`, offset, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	defer result.Close()
+
+	for result.Next() {
+		var event entities.Event
+		err = result.Scan(&event.Id, &event.Id_user, &event.Id_category, &event.Title, &event.Start_date, &event.End_date, &event.Location, &event.Details, &event.Photo, &event.HostedBy)
+		if err != nil {
+			return nil, err
+		}
+
+		events = append(events, event)
+	}
+	return events, nil
+}
+
+func (re *Repository_Event) GetEventsByCategory(limit, offset, id_category int) ([]entities.Event, error) {
+	var events []entities.Event
+	result, err := re.db.Query(`select e.id, e.id_user, e.id_category, e.title, e.start_date, e.end_date, e.location, e.details, e.photo, u.name
+								from event e 
+								join users u on u.id = e.id_user and u.deleted_at is null
+								WHERE e.deleted_at IS NULL AND e.id_category = ?
+								LIMIT ?, ?`, id_category, offset, limit)
 	if err != nil {
 		return nil, err
 	}
