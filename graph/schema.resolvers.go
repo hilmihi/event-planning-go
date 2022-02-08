@@ -316,12 +316,17 @@ func (r *queryResolver) Category(ctx context.Context) ([]*model.Category, error)
 }
 
 func (r *queryResolver) Comments(ctx context.Context, idEvent int) ([]*model.Comment, error) {
-	_, bol := ctx.Value("EchoContextKey").(int)
-	if bol == false {
-		return nil, fmt.Errorf("Not Authorized")
+	responseData, err := r.commentService.ServiceCommentsGet(idEvent)
+
+	if err != nil {
+		return nil, err
 	}
 
-	responseData, err := r.commentService.ServiceCommentsGet(idEvent)
+	return responseData, nil
+}
+
+func (r *queryResolver) Participants(ctx context.Context, idEvent int) ([]*model.Participant, error) {
+	responseData, err := r.participantService.ServiceParticipantsGet(idEvent)
 
 	if err != nil {
 		return nil, err
