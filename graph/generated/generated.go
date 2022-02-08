@@ -133,6 +133,7 @@ type ComplexityRoot struct {
 		EventHistory     func(childComplexity int, idUser int) int
 		EventSearch      func(childComplexity int, title string) int
 		Events           func(childComplexity int, limit int, offset int) int
+		EventsByCategory func(childComplexity int, idCategory int, limit int, offset int) int
 		EventsByID       func(childComplexity int, id int) int
 		EventsPagination func(childComplexity int, limit int, offset int) int
 		Login            func(childComplexity int, email string, password string) int
@@ -189,6 +190,7 @@ type QueryResolver interface {
 	Events(ctx context.Context, limit int, offset int) ([]*model.Event, error)
 	EventsPagination(ctx context.Context, limit int, offset int) (*model.Pagination, error)
 	EventsByID(ctx context.Context, id int) (*model.EventDetail, error)
+	EventsByCategory(ctx context.Context, idCategory int, limit int, offset int) ([]*model.Event, error)
 	EventSearch(ctx context.Context, title string) ([]*model.Event, error)
 	MyEvent(ctx context.Context, idUser int) ([]*model.Event, error)
 	EventHistory(ctx context.Context, idUser int) ([]*model.Event, error)
@@ -763,6 +765,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Events(childComplexity, args["limit"].(int), args["offset"].(int)), true
 
+	case "Query.eventsByCategory":
+		if e.complexity.Query.EventsByCategory == nil {
+			break
+		}
+
+		args, err := ec.field_Query_eventsByCategory_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.EventsByCategory(childComplexity, args["id_category"].(int), args["limit"].(int), args["offset"].(int)), true
+
 	case "Query.eventsById":
 		if e.complexity.Query.EventsByID == nil {
 			break
@@ -1141,6 +1155,7 @@ type Query {
   events(limit: Int!, offset: Int!): [Event!]!
   eventsPagination(limit: Int!, offset: Int!): Pagination!
   eventsById(id: Int!): EventDetail!
+  eventsByCategory(id_category: Int!, limit:Int!, offset: Int!): [Event!]
   eventSearch(title: String!): [Event!]!
   myEvent(id_user: Int!): [Event!]!
   eventHistory(id_user: Int!): [Event!]!
@@ -1470,6 +1485,39 @@ func (ec *executionContext) field_Query_eventSearch_args(ctx context.Context, ra
 		}
 	}
 	args["title"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_eventsByCategory_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["id_category"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id_category"))
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id_category"] = arg0
+	var arg1 int
+	if tmp, ok := rawArgs["limit"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+		arg1, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["limit"] = arg1
+	var arg2 int
+	if tmp, ok := rawArgs["offset"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
+		arg2, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["offset"] = arg2
 	return args, nil
 }
 
@@ -4069,6 +4117,45 @@ func (ec *executionContext) _Query_eventsById(ctx context.Context, field graphql
 	res := resTmp.(*model.EventDetail)
 	fc.Result = res
 	return ec.marshalNEventDetail2ᚖsircloᚋapiᚋgraphᚋmodelᚐEventDetail(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_eventsByCategory(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_eventsByCategory_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().EventsByCategory(rctx, args["id_category"].(int), args["limit"].(int), args["offset"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Event)
+	fc.Result = res
+	return ec.marshalOEvent2ᚕᚖsircloᚋapiᚋgraphᚋmodelᚐEventᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_eventSearch(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -7248,6 +7335,26 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
+		case "eventsByCategory":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_eventsByCategory(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
 		case "eventSearch":
 			field := field
 
@@ -8735,6 +8842,53 @@ func (ec *executionContext) marshalOComment2ᚖsircloᚋapiᚋgraphᚋmodelᚐCo
 		return graphql.Null
 	}
 	return ec._Comment(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOEvent2ᚕᚖsircloᚋapiᚋgraphᚋmodelᚐEventᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Event) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNEvent2ᚖsircloᚋapiᚋgraphᚋmodelᚐEvent(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalOEvent2ᚖsircloᚋapiᚋgraphᚋmodelᚐEvent(ctx context.Context, sel ast.SelectionSet, v *model.Event) graphql.Marshaler {
