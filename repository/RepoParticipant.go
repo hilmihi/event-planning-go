@@ -70,7 +70,7 @@ func (r *Repository_Participant) CreateParticipant(participant entities.Particip
 // get id_user participant
 func (r *Repository_Participant) GetParticipants(idEvent int) ([]entities.Participant, error) {
 	var participants []entities.Participant
-	results, err := r.db.Query(`select id_event, id_user from participant where deleted_at is null AND id_event =?`, idEvent)
+	results, err := r.db.Query(`select id_event, id_user from participant where deleted_at is null AND id_event = ?`, idEvent)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
