@@ -239,6 +239,20 @@ func (r *queryResolver) EventsByID(ctx context.Context, id int) (*model.EventDet
 	return &responseData, nil
 }
 
+func (r *queryResolver) EventsByCategory(ctx context.Context, idCategory int, limit int, offset int) ([]*model.Event, error) {
+	responseData, err := r.eventService.ServiceEventsByCategoryGet(limit, offset, idCategory)
+	if err != nil {
+		return nil, err
+	}
+
+	eventResponseData := []*model.Event{}
+	for _, v := range responseData {
+		eventResponseData = append(eventResponseData, &model.Event{ID: v.Id, IDUser: &v.Id_user, IDCategory: v.Id_category, Title: v.Title, StartDate: v.Start_date, EndDate: v.End_date, Location: v.Location, Details: v.Details, Photo: &v.Photo})
+	}
+
+	return eventResponseData, nil
+}
+
 func (r *queryResolver) EventSearch(ctx context.Context, title string) ([]*model.Event, error) {
 	responseData, err := r.eventService.ServiceSearctEventsGet(title)
 	if err != nil {

@@ -114,6 +114,7 @@ type Query {
   events(limit: Int!, offset: Int!): [Event!]!
   eventsPagination(limit: Int!, offset: Int!): Pagination!
   eventsById(id: Int!): EventDetail!
+  eventsByCategory(id_category: Int!, limit:Int!, offset: Int!): [Event!]
   eventSearch(title: String!): [Event!]!
   myEvent(id_user: Int!): [Event!]!
   eventHistory(id_user: Int!): [Event!]!
