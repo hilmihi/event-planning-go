@@ -91,7 +91,7 @@ func (s *serviceUser) ServiceUserGet(id int) (model.User, error) {
 		Password:    user.Password,
 		BirthDate:   &user.Birth_date,
 		PhoneNumber: &user.Phone_number,
-		Photo:       &user.Phone_number,
+		Photo:       &user.Photo,
 		Gender:      &user.Gender,
 		Address:     &user.Address,
 	}
