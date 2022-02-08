@@ -57,7 +57,7 @@ func InitRoute(db *sql.DB) *echo.Echo {
 		//for subscriptions
 		// e.
 
-		e.POST("/playground", func(c echo.Context) error {
+		e.GET("/playground", func(c echo.Context) error {
 			playground.Handler("GraphQL", "/query").ServeHTTP(c.Response(), c.Request())
 			return nil
 		})
