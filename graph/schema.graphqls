@@ -121,6 +121,7 @@ type Query {
   category: [Category!]!
   
   comments(id_event: Int!):[Comment!]!
+  participants(id_event: Int!):[Participant!]!
 
 }
 
