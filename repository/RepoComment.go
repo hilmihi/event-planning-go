@@ -25,7 +25,7 @@ func (r *Repository_Comment) GetComments(id_event int) ([]entities.Comment, erro
 	results, err := r.db.Query(`select c.id, c.id_event, c.id_user, c.comment, c.created_at, u.name, u.email, u.photo
 								from comment c
 								join users u on u.id = c.id_user
-								where c.deleted_at is null order by created_at asc`)
+								where c.deleted_at is null and c.id_event = ? order by created_at asc`, id_event)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
