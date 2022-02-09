@@ -131,27 +131,34 @@ func (se *serviceEvent) ServiceEventGet(id int) (model.EventDetail, error) {
 	}
 
 	for _, val := range comments {
+		tempName := val.Name
+		tempComment := val.Comment
+		tempEmail := val.Email
+		tempPhoto := val.Photo
 		comment := model.Comment{
 			ID:      val.Id,
 			IDEvent: val.Id_event,
 			IDUser:  val.Id_user,
-			Comment: &val.Comment,
-			Name:    &val.Name,
-			Email:   &val.Email,
-			Photo:   &val.Photo,
+			Comment: &tempComment,
+			Name:    &tempName,
+			Email:   &tempEmail,
+			Photo:   &tempPhoto,
 		}
 
 		output.Comments = append(output.Comments, &comment)
 	}
 
 	for _, val := range participants {
+		tempName := val.Name
+		tempEmail := val.Email
+		tempPhoto := val.Photo
 		participant := model.Participant{
 			ID:      val.Id,
 			IDEvent: val.Id_event,
 			IDUser:  val.Id_user,
-			Name:    &val.Name,
-			Email:   &val.Email,
-			Photo:   &val.Photo,
+			Name:    &tempName,
+			Email:   &tempEmail,
+			Photo:   &tempPhoto,
 		}
 
 		output.Participant = append(output.Participant, &participant)
